@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Air Pollution & Weather Forecast
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+    <div class="container">
+
+        <header>
+
+            <h1>
+                Air Pollution & Weather Forecast
+            </h1>
+
+            <p>
+                Weather and air-quality information for your location
+            </p>
+
+        </header>
+
+
+        <section class="search-section">
+
+            <form method="POST">
+
+                <input
+                    type="text"
+                    name="city"
+                    placeholder="Enter city name..."
+                    required
+                >
+
+                <button type="submit">
+                    Search
+                </button>
+
+            </form>
+
+        </section>
+
+
+        {% if error %}
+
+        <div class="error">
+
+            {{ error }}
+
+        </div>
+
+        {% endif %}
+
+
+        {% if location %}
+
+        <section class="location">
+
+            <h2>
+                {{ location.name }}
+            </h2>
+
+            <p>
+                Latitude:
+                {{ "%.4f"|format(location.latitude) }}
+            </p>
+
+            <p>
+                Longitude:
+                {{ "%.4f"|format(location.longitude) }}
+            </p>
+
+        </section>
+
+
+        <section class="dashboard">
+
+           <div class="card">
+
+    <h3>
+        Current Weather
+    </h3>
+
+    {% if weather %}
+
+    <p>
+        Temperature:
+        {{ weather["current"]["temperature_2m"] }}
+        °C
+    </p>
+
+    <p>
+        Humidity:
+        {{ weather["current"]["relative_humidity_2m"] }}
+        %
+    </p>
+
+    <p>
+        Wind:
+        {{ weather["current"]["wind_speed_10m"] }}
+        km/h
+    </p>
+
+    <p>
+        Wind Direction:
+        {{ weather["current"]["wind_direction_10m"] }}
+        °
+    </p>
+
+    <p>
+        Pressure:
+        {{ weather["current"]["pressure_msl"] }}
+        hPa
+    </p>
+
+    <p>
+        Precipitation:
+        {{ weather["current"]["precipitation"] }}
+        mm
+    </p>
+
+    {% else %}
+
+    <p>
+        Weather data unavailable.
+    </p>
+
+    {% endif %}
+
+</div>
+
+
+            <div class="card">
+
+                <h3>
+                    Air Quality
+                </h3>
+
+                {% if air_quality %}
+
+                <p>
+                    PM2.5:
+                    {{ air_quality["hourly"]["pm2_5"][0] }}
+                    µg/m³
+                </p>
+
+                <p>
+                    PM10:
+                    {{ air_quality["hourly"]["pm10"][0] }}
+                    µg/m³
+                </p>
+
+                <p>
+                    NO₂:
+                    {{ air_quality["hourly"]["nitrogen_dioxide"][0] }}
+                    µg/m³
+                </p>
+
+                <p>
+                    O₃:
+                    {{ air_quality["hourly"]["ozone"][0] }}
+                    µg/m³
+                </p>
+
+                {% else %}
+
+                <p>
+                    Air-quality data unavailable.
+                </p>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+        {% endif %}
+
+    </div>
+
+</body>
+
+</html>
