@@ -101,3 +101,71 @@ header p {
     }
 
 }
+/* =========================
+   MAP
+   ========================= */
+
+.map-section {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+}
+
+.map-section h2 {
+    margin-top: 0;
+}
+
+#map {
+    width: 100%;
+    height: 500px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 700px) {
+
+    #map {
+        height: 400px;
+    }
+
+}
+
+
+
+
+
+
+/* =========================
+   FORECAST
+   ========================= */
+
+.forecast-section {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    margin-top: 25px;
+    margin-bottom: 40px;
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+
+
+

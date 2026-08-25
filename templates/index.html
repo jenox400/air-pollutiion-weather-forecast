@@ -11,190 +11,3390 @@
     >
 
     <title>
-        Air Pollution & Weather Forecast
+        Air-Couple | Air Pollution & Weather Forecast
     </title>
+
+
+    <!-- =====================================================
+         LEAFLET
+         ===================================================== -->
 
     <link
         rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     >
+
+
+    <!-- =====================================================
+         CHART.JS
+         ===================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+    <!-- =====================================================
+         STYLES
+         ===================================================== -->
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                #f4f7fb;
+
+            color:
+                #172033;
+        }
+
+
+        /* =================================================
+           HEADER
+           ================================================= */
+
+        header {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0b3d91,
+                    #1464c4
+                );
+
+            color:
+                white;
+
+            padding:
+                24px 30px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0,0,0,0.15);
+        }
+
+
+        header h1 {
+
+            margin:
+                0 0 6px 0;
+
+            font-size:
+                30px;
+        }
+
+
+        header p {
+
+            margin:
+                0;
+
+            opacity:
+                0.9;
+        }
+
+
+        /* =================================================
+           MAIN
+           ================================================= */
+
+        .container {
+
+            width:
+                min(1400px, 94%);
+
+            margin:
+                25px auto;
+        }
+
+
+        /* =================================================
+           SEARCH
+           ================================================= */
+
+        .search-card {
+
+            background:
+                white;
+
+            padding:
+                20px;
+
+            border-radius:
+                14px;
+
+            box-shadow:
+                0 4px 16px
+                rgba(0,0,0,0.08);
+
+            margin-bottom:
+                22px;
+        }
+
+
+        .search-form {
+
+            display:
+                flex;
+
+            gap:
+                10px;
+
+            flex-wrap:
+                wrap;
+        }
+
+
+        .search-form input {
+
+            flex:
+                1;
+
+            min-width:
+                220px;
+
+            padding:
+                13px 15px;
+
+            border:
+                1px solid #ccd4df;
+
+            border-radius:
+                9px;
+
+            font-size:
+                16px;
+        }
+
+
+        .search-form button {
+
+            border:
+                none;
+
+            padding:
+                13px 22px;
+
+            border-radius:
+                9px;
+
+            background:
+                #1464c4;
+
+            color:
+                white;
+
+            cursor:
+                pointer;
+
+            font-size:
+                16px;
+
+            font-weight:
+                bold;
+        }
+
+
+        .search-form button:hover {
+
+            background:
+                #0b4e9c;
+        }
+
+
+        .map-help {
+
+            margin-top:
+                10px;
+
+            color:
+                #667085;
+
+            font-size:
+                14px;
+        }
+
+
+        /* =================================================
+           ERROR
+           ================================================= */
+
+        .error-box {
+
+            background:
+                #fff0f0;
+
+            color:
+                #9b1c1c;
+
+            border:
+                1px solid #f3b3b3;
+
+            padding:
+                14px;
+
+            border-radius:
+                10px;
+
+            margin-bottom:
+                20px;
+        }
+
+
+        /* =================================================
+           MAP
+           ================================================= */
+
+        .map-card {
+
+            background:
+                white;
+
+            border-radius:
+                14px;
+
+            padding:
+                15px;
+
+            box-shadow:
+                0 4px 16px
+                rgba(0,0,0,0.08);
+
+            margin-bottom:
+                22px;
+        }
+
+
+        #map {
+
+            width:
+                100%;
+
+            height:
+                480px;
+
+            border-radius:
+                12px;
+        }
+
+
+        /* =================================================
+           LOCATION
+           ================================================= */
+
+        .location-title {
+
+            margin:
+                0 0 5px 0;
+        }
+
+
+        .coordinates {
+
+            color:
+                #667085;
+
+            font-size:
+                14px;
+        }
+
+
+        /* =================================================
+           GRID
+           ================================================= */
+
+        .grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(220px, 1fr)
+                );
+
+            gap:
+                16px;
+
+            margin-bottom:
+                22px;
+        }
+
+
+        /* =================================================
+           CARDS
+           ================================================= */
+
+        .card {
+
+            background:
+                white;
+
+            border-radius:
+                14px;
+
+            padding:
+                20px;
+
+            box-shadow:
+                0 4px 16px
+                rgba(0,0,0,0.08);
+        }
+
+
+        .card h3 {
+
+            margin-top:
+                0;
+
+            margin-bottom:
+                14px;
+        }
+
+
+        .metric {
+
+            font-size:
+                30px;
+
+            font-weight:
+                bold;
+
+            margin:
+                5px 0;
+        }
+
+
+        .metric-label {
+
+            color:
+                #667085;
+
+            font-size:
+                14px;
+        }
+
+
+        .small-value {
+
+            font-size:
+                18px;
+
+            font-weight:
+                bold;
+        }
+
+
+        /* =================================================
+           AQI
+           ================================================= */
+
+        .aqi-card {
+
+            text-align:
+                center;
+        }
+
+
+        .aqi-number {
+
+            font-size:
+                55px;
+
+            font-weight:
+                800;
+
+            margin:
+                5px 0;
+        }
+
+
+        .aqi-category {
+
+            display:
+                inline-block;
+
+            padding:
+                7px 16px;
+
+            border-radius:
+                30px;
+
+            font-weight:
+                bold;
+
+            background:
+                #e9eef5;
+        }
+
+
+        /* =================================================
+           COUPLING GRID
+           ================================================= */
+
+        .coupling-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(200px, 1fr)
+                );
+
+            gap:
+                15px;
+        }
+
+
+        .coupling-item {
+
+            border:
+                1px solid #e0e6ef;
+
+            border-radius:
+                12px;
+
+            padding:
+                16px;
+
+            background:
+                #f9fbfd;
+        }
+
+
+        .coupling-value {
+
+            font-size:
+                24px;
+
+            font-weight:
+                bold;
+
+            margin:
+                8px 0;
+        }
+
+
+        .status {
+
+            display:
+                inline-block;
+
+            padding:
+                5px 10px;
+
+            border-radius:
+                20px;
+
+            font-size:
+                13px;
+
+            font-weight:
+                bold;
+
+            background:
+                #e8edf3;
+        }
+
+
+        /* =================================================
+           RISK
+           ================================================= */
+
+        .risk-list {
+
+            display:
+                grid;
+
+            gap:
+                10px;
+        }
+
+
+        .risk-item {
+
+            padding:
+                14px;
+
+            border-radius:
+                10px;
+
+            background:
+                #f5f7fa;
+
+            border-left:
+                5px solid #7b8794;
+        }
+
+
+        .risk-title {
+
+            font-weight:
+                bold;
+
+            margin-bottom:
+                4px;
+        }
+
+
+        /* =================================================
+           WHY SECTION
+           ================================================= */
+
+        .reason {
+
+            padding:
+                13px 15px;
+
+            margin:
+                9px 0;
+
+            border-radius:
+                10px;
+
+            background:
+                #f6f8fb;
+        }
+
+
+        .reason strong {
+
+            display:
+                block;
+
+            margin-bottom:
+                4px;
+        }
+
+
+        /* =================================================
+           HEALTH
+           ================================================= */
+
+        .health-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(220px, 1fr)
+                );
+
+            gap:
+                14px;
+        }
+
+
+        .health-card {
+
+            border:
+                1px solid #e1e7ef;
+
+            border-radius:
+                12px;
+
+            padding:
+                16px;
+
+            background:
+                #fbfcfe;
+        }
+
+
+        .health-card h4 {
+
+            margin:
+                0 0 8px 0;
+        }
+
+
+        /* =================================================
+           CHARTS
+           ================================================= */
+
+        .chart-card {
+
+            background:
+                white;
+
+            border-radius:
+                14px;
+
+            padding:
+                20px;
+
+            box-shadow:
+                0 4px 16px
+                rgba(0,0,0,0.08);
+
+            margin-bottom:
+                20px;
+        }
+
+
+        .chart-container {
+
+            position:
+                relative;
+
+            height:
+                350px;
+        }
+
+
+        /* =================================================
+           FORECAST TABLE
+           ================================================= */
+
+        .table-wrapper {
+
+            overflow-x:
+                auto;
+        }
+
+
+        table {
+
+            width:
+                100%;
+
+            border-collapse:
+                collapse;
+
+            min-width:
+                900px;
+        }
+
+
+        th,
+        td {
+
+            padding:
+                11px;
+
+            border-bottom:
+                1px solid #e5e9ef;
+
+            text-align:
+                left;
+
+            font-size:
+                14px;
+        }
+
+
+        th {
+
+            background:
+                #f4f7fa;
+
+            font-weight:
+                bold;
+        }
+
+
+        /* =================================================
+           LOADING
+           ================================================= */
+
+        #loading {
+
+            display:
+                none;
+
+            position:
+                fixed;
+
+            inset:
+                0;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.82
+                );
+
+            z-index:
+                9999;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                22px;
+
+            font-weight:
+                bold;
+        }
+
+
+        /* =================================================
+           FOOTER
+           ================================================= */
+
+        footer {
+
+            text-align:
+                center;
+
+            padding:
+                25px;
+
+            color:
+                #667085;
+
+            font-size:
+                13px;
+        }
+
+
+        /* =================================================
+           MOBILE
+           ================================================= */
+
+        @media (
+            max-width: 700px
+        ) {
+
+            header {
+
+                padding:
+                    20px;
+            }
+
+
+            header h1 {
+
+                font-size:
+                    23px;
+            }
+
+
+            .container {
+
+                width:
+                    95%;
+            }
+
+
+            #map {
+
+                height:
+                    360px;
+            }
+
+
+            .chart-container {
+
+                height:
+                    280px;
+            }
+
+        }
+
+    </style>
 
 </head>
 
 
 <body>
 
-    <div class="container">
 
-        <header>
+<!-- =====================================================
+     LOADING
+     ===================================================== -->
 
-            <h1>
-                Air Pollution & Weather Forecast
-            </h1>
+<div id="loading">
 
-            <p>
-                Weather and air-quality information for your location
-            </p>
+    Loading environmental data...
 
-        </header>
+</div>
 
 
-        <section class="search-section">
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
 
-            <form method="POST">
+<header>
 
-                <input
-                    type="text"
-                    name="city"
-                    placeholder="Enter city name..."
-                    required
-                >
+    <h1>
+        AIR-COUPLE
+    </h1>
 
-                <button type="submit">
-                    Search
-                </button>
+    <p>
+        Air Pollution & Weather Coupled Forecasting System
+    </p>
 
-            </form>
-
-        </section>
+</header>
 
 
-        {% if error %}
+<div class="container">
 
-        <div class="error">
 
-            {{ error }}
+    <!-- =================================================
+         SEARCH
+         ================================================= -->
+
+    <div class="search-card">
+
+        <form
+            method="POST"
+            class="search-form"
+            id="searchForm"
+        >
+
+            <input
+                type="text"
+                name="city"
+                id="cityInput"
+                placeholder="Search city or location..."
+                autocomplete="off"
+            >
+
+            <button type="submit">
+                Search Location
+            </button>
+
+        </form>
+
+
+        <div class="map-help">
+
+            Or click anywhere on the map to analyse that
+            location.
 
         </div>
 
-        {% endif %}
+    </div>
 
 
-        {% if location %}
+    <!-- =================================================
+         ERROR
+         ================================================= -->
 
-        <section class="location">
+    {% if error %}
 
-            <h2>
-                {{ location.name }}
-            </h2>
+    <div class="error-box">
 
-            <p>
-                Latitude:
-                {{ "%.4f"|format(location.latitude) }}
-            </p>
+        {{ error }}
 
-            <p>
-                Longitude:
-                {{ "%.4f"|format(location.longitude) }}
-            </p>
-
-        </section>
-
-
-        <section class="dashboard">
-
-           <div class="card">
-
-    <h3>
-        Current Weather
-    </h3>
-
-    {% if weather %}
-
-    <p>
-        Temperature:
-        {{ weather["current"]["temperature_2m"] }}
-        °C
-    </p>
-
-    <p>
-        Humidity:
-        {{ weather["current"]["relative_humidity_2m"] }}
-        %
-    </p>
-
-    <p>
-        Wind:
-        {{ weather["current"]["wind_speed_10m"] }}
-        km/h
-    </p>
-
-    <p>
-        Wind Direction:
-        {{ weather["current"]["wind_direction_10m"] }}
-        °
-    </p>
-
-    <p>
-        Pressure:
-        {{ weather["current"]["pressure_msl"] }}
-        hPa
-    </p>
-
-    <p>
-        Precipitation:
-        {{ weather["current"]["precipitation"] }}
-        mm
-    </p>
-
-    {% else %}
-
-    <p>
-        Weather data unavailable.
-    </p>
+    </div>
 
     {% endif %}
 
-</div>
+
+    <!-- =================================================
+         LOCATION
+         ================================================= -->
+
+    {% if location %}
+
+    <div class="card">
+
+        <h2 class="location-title">
+
+            {{ (location or {}).get("name", "Selected Location") }}
+
+        </h2>
+
+        <div class="coordinates">
+
+            Latitude:
+            {{ (location or {}).get("latitude", "") }}
+
+            &nbsp;&nbsp;|&nbsp;&nbsp;
+
+            Longitude:
+            {{ (location or {}).get("longitude", "") }}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- =================================================
+         MAP
+         ================================================= -->
+
+    <div class="map-card">
+
+        <h3>
+            Interactive Environmental Map
+        </h3>
+
+        <div id="map"></div>
+
+    </div>
+
+
+    <!-- =================================================
+         CURRENT CONDITIONS
+         ================================================= -->
+
+    <div id="dashboard">
+
+
+
+
+
+        <!-- =============================================
+             CURRENT WEATHER
+             ============================================= -->
+
+        <div class="grid">
+
+            <div class="card">
+
+                <h3>
+                    Temperature
+                </h3>
+
+                <div
+                    class="metric"
+                    id="temperatureValue"
+                >
+
+                    {{ (weather or {}).get("current", {}).get(
+                        "temperature_2m",
+                        "--"
+                    ) }} °C
+
+                </div>
+
+                <div class="metric-label">
+                    Current temperature
+                </div>
+
+            </div>
 
 
             <div class="card">
 
                 <h3>
-                    Air Quality
+                    Humidity
                 </h3>
 
-                {% if air_quality %}
+                <div
+                    class="metric"
+                    id="humidityValue"
+                >
 
-                <p>
-                    PM2.5:
-                    {{ air_quality["hourly"]["pm2_5"][0] }}
+                    {{ (weather or {}).get("current", {}).get(
+                        "relative_humidity_2m",
+                        "--"
+                    ) }} %
+
+                </div>
+
+                <div class="metric-label">
+                    Relative humidity
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Wind
+                </h3>
+
+                <div
+                    class="metric"
+                    id="windValue"
+                >
+
+                    {{ (weather or {}).get("current", {}).get(
+                        "wind_speed_10m",
+                        "--"
+                    ) }}
+
+                </div>
+
+                <div class="metric-label">
+                    Wind speed (km/h)
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Pressure
+                </h3>
+
+                <div
+                    class="metric"
+                    id="pressureValue"
+                >
+
+                    {{ (weather or {}).get("current", {}).get(
+                        "pressure_msl",
+                        "--"
+                    ) }}
+
+                </div>
+
+                <div class="metric-label">
+                    Mean sea-level pressure (hPa)
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             AIR QUALITY
+             ============================================= -->
+
+        <div class="grid">
+
+            <div class="card">
+
+                <h3>
+                    PM2.5
+                </h3>
+
+                <div
+                    class="metric"
+                    id="pm25Value"
+                >
+
+                    {% if (air_quality or {}).get("hourly", {}).get("pm2_5") %}
+
+                        {{ (air_quality or {}).get("hourly", {}).get("pm2_5")[0] }}
+
+                    {% else %}
+
+                        --
+
+                    {% endif %}
+
+                </div>
+
+                <div class="metric-label">
                     µg/m³
-                </p>
+                </div>
 
-                <p>
-                    PM10:
-                    {{ air_quality["hourly"]["pm10"][0] }}
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    PM10
+                </h3>
+
+                <div
+                    class="metric"
+                    id="pm10Value"
+                >
+
+                    {% if (air_quality or {}).get("hourly", {}).get("pm10") %}
+
+                        {{ (air_quality or {}).get("hourly", {}).get("pm10")[0] }}
+
+                    {% else %}
+
+                        --
+
+                    {% endif %}
+
+                </div>
+
+                <div class="metric-label">
                     µg/m³
-                </p>
+                </div>
 
-                <p>
-                    NO₂:
-                    {{ air_quality["hourly"]["nitrogen_dioxide"][0] }}
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    NO₂
+                </h3>
+
+                <div
+                    class="metric"
+                    id="no2Value"
+                >
+
+                    {% if (air_quality or {}).get("hourly", {}).get("nitrogen_dioxide") %}
+
+                        {{ (air_quality or {}).get("hourly", {}).get("nitrogen_dioxide")[0] }}
+
+                    {% else %}
+
+                        --
+
+                    {% endif %}
+
+                </div>
+
+                <div class="metric-label">
                     µg/m³
-                </p>
+                </div>
 
-                <p>
-                    O₃:
-                    {{ air_quality["hourly"]["ozone"][0] }}
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    O₃
+                </h3>
+
+                <div
+                    class="metric"
+                    id="ozoneValue"
+                >
+
+                    {% if (air_quality or {}).get("hourly", {}).get("ozone") %}
+
+                        {{ (air_quality or {}).get("hourly", {}).get("ozone")[0] }}
+
+                    {% else %}
+
+                        --
+
+                    {% endif %}
+
+                </div>
+
+                <div class="metric-label">
                     µg/m³
-                </p>
+                </div>
 
-                {% else %}
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             AQI + COUPLING
+             ============================================= -->
+
+        <div class="grid">
+
+
+            <div class="card aqi-card">
+
+                <h3>
+                    Current AQI
+                </h3>
+
+                <div
+                    class="aqi-number"
+                    id="aqiNumber"
+                >
+
+                    {% if current_aqi and (current_aqi or {}).get("aqi") is not none %}
+
+                        {{ (current_aqi or {}).get("aqi") }}
+
+                    {% else %}
+
+                        --
+
+                    {% endif %}
+
+                </div>
+
+
+                <div
+                    class="aqi-category"
+                    id="aqiCategory"
+                >
+
+                    {% if current_aqi %}
+
+                        {{ (current_aqi or {}).get(
+                            "category",
+                            "Unknown"
+                        ) }}
+
+                    {% else %}
+
+                        Unknown
+
+                    {% endif %}
+
+                </div>
+
+
+                {% if current_aqi and (current_aqi or {}).get("primary_pollutant") %}
 
                 <p>
-                    Air-quality data unavailable.
+
+                    Primary pollutant:
+
+                    <strong>
+
+                        {{ (current_aqi or {}).get(
+                            "primary_pollutant"
+                        ) }}
+
+                    </strong>
+
                 </p>
 
                 {% endif %}
 
             </div>
 
-        </section>
 
-        {% endif %}
+            <div class="card">
+
+                <h3>
+                    Environmental Risk
+                </h3>
+
+
+                <div
+                    id="overallRisk"
+                    class="metric"
+                >
+
+                    {% if risk %}
+
+                        {{ (risk or {}).get(
+                            "overall_risk",
+                            (risk or {}).get(
+                                "level",
+                                "Available"
+                            )
+                        ) }}
+
+                    {% else %}
+
+                        --
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="metric-label">
+
+                    Based on current environmental
+                    conditions
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             COUPLING CONDITIONS
+             ============================================= -->
+
+        <div class="card">
+
+            <h2>
+                🌫️ Weather–Pollution Coupling
+            </h2>
+
+            <p>
+
+                These indicators describe how current
+                atmospheric conditions may influence
+                pollution dispersion or accumulation.
+
+            </p>
+
+
+            <div
+                class="coupling-grid"
+                id="currentCoupling"
+            >
+
+                <div class="coupling-item">
+
+                    <div>
+                        PBL Height
+                    </div>
+
+                    <div
+                        class="coupling-value"
+                        id="pblCurrent"
+                    >
+                        --
+                    </div>
+
+                    <span
+                        class="status"
+                        id="pblStatus"
+                    >
+                        --
+                    </span>
+
+                </div>
+
+
+                <div class="coupling-item">
+
+                    <div>
+                        Atmospheric Stability
+                    </div>
+
+                    <div
+                        class="coupling-value"
+                        id="inversionCurrent"
+                    >
+                        --
+                    </div>
+
+                    <span
+                        class="status"
+                        id="inversionStatus"
+                    >
+                        --
+                    </span>
+
+                </div>
+
+
+                <div class="coupling-item">
+
+                    <div>
+                        Dispersion
+                    </div>
+
+                    <div
+                        class="coupling-value"
+                        id="dispersionCurrent"
+                    >
+                        --
+                    </div>
+
+                    <span
+                        class="status"
+                        id="dispersionStatus"
+                    >
+                        --
+                    </span>
+
+                </div>
+
+
+                <div class="coupling-item">
+
+                    <div>
+                        Accumulation
+                    </div>
+
+                    <div
+                        class="coupling-value"
+                        id="accumulationCurrent"
+                    >
+                        --
+                    </div>
+
+                    <span
+                        class="status"
+                        id="accumulationStatus"
+                    >
+                        --
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             WHY IS POLLUTION CHANGING?
+             ============================================= -->
+
+        <div class="card">
+
+            <h2>
+                🧠 Why could pollution change?
+            </h2>
+
+            <div id="whyPollution">
+
+                Loading explanation...
+
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             HEALTH ADVISORY
+             ============================================= -->
+
+        <div class="card">
+
+            <h2>
+                👥 Environmental Health Advisory
+            </h2>
+
+            <p>
+
+                These are exposure-reduction recommendations,
+                not medical diagnoses.
+
+            </p>
+
+
+            <div class="health-grid">
+
+                <div class="health-card">
+
+                    <h4>
+                        General Population
+                    </h4>
+
+                    <p id="healthGeneral">
+                        Loading...
+                    </p>
+
+                </div>
+
+
+                <div class="health-card">
+
+                    <h4>
+                        Children
+                    </h4>
+
+                    <p id="healthChildren">
+                        Loading...
+                    </p>
+
+                </div>
+
+
+                <div class="health-card">
+
+                    <h4>
+                        Older Adults
+                    </h4>
+
+                    <p id="healthOlder">
+                        Loading...
+                    </p>
+
+                </div>
+
+
+                <div class="health-card">
+
+                    <h4>
+                        Respiratory-Sensitive People
+                    </h4>
+
+                    <p id="healthRespiratory">
+                        Loading...
+                    </p>
+
+                </div>
+
+
+                <div class="health-card">
+
+                    <h4>
+                        Outdoor Workers
+                    </h4>
+
+                    <p id="healthWorkers">
+                        Loading...
+                    </p>
+
+                </div>
+
+
+                <div class="health-card">
+
+                    <h4>
+                        Athletes
+                    </h4>
+
+                    <p id="healthAthletes">
+                        Loading...
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             24 / 48 / 72 HOUR CHART
+             ============================================= -->
+
+        <div class="chart-card">
+
+            <h2>
+                📈 72-Hour Coupled Forecast
+            </h2>
+
+            <p>
+
+                The forecast combines pollutant concentrations
+                with meteorological dispersion indicators.
+
+            </p>
+
+
+            <div class="chart-container">
+
+                <canvas id="aqiChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="chart-card">
+
+            <h2>
+                PM2.5 — 72 Hours
+            </h2>
+
+
+            <div class="chart-container">
+
+                <canvas id="pm25Chart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="chart-card">
+
+            <h2>
+                PBL Height — 72 Hours
+            </h2>
+
+
+            <div class="chart-container">
+
+                <canvas id="pblChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="chart-card">
+
+            <h2>
+                Dispersion & Accumulation
+            </h2>
+
+
+            <div class="chart-container">
+
+                <canvas id="couplingChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             FORECAST TABLE
+             ============================================= -->
+
+        <div class="card">
+
+            <h2>
+                📋 72-Hour Forecast Data
+            </h2>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Time
+                            </th>
+
+                            <th>
+                                Temp
+                            </th>
+
+                            <th>
+                                Wind
+                            </th>
+
+                            <th>
+                                PM2.5
+                            </th>
+
+                            <th>
+                                PM10
+                            </th>
+
+                            <th>
+                                AQI
+                            </th>
+
+                            <th>
+                                PBL
+                            </th>
+
+                            <th>
+                                Stability
+                            </th>
+
+                            <th>
+                                Dispersion
+                            </th>
+
+                            <th>
+                                Accumulation
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="forecastTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
 
     </div>
+
+
+</div>
+
+
+<footer>
+
+    AIR-COUPLE —
+    Physics-informed air pollution and weather
+    forecasting prototype.
+
+</footer>
+
+
+<!-- =====================================================
+     LEAFLET
+     ===================================================== -->
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+<script>
+
+/* =========================================================
+   GLOBAL VARIABLES
+   ========================================================= */
+
+let map = null;
+
+let marker = null;
+
+let aqiChart = null;
+
+let pm25Chart = null;
+
+let pblChart = null;
+
+let couplingChart = null;
+
+
+/* =========================================================
+   DEFAULT MAP LOCATION
+   Delhi
+   ========================================================= */
+
+const DEFAULT_LAT = 28.6139;
+
+const DEFAULT_LON = 77.2090;
+
+
+/* =========================================================
+   INITIALIZE MAP
+   ========================================================= */
+
+function initializeMap() {
+
+    if (typeof L === "undefined") {
+
+        console.error(
+            "Leaflet did not load."
+        );
+
+        const mapElement =
+            document.getElementById("map");
+
+        if (mapElement) {
+
+            mapElement.innerHTML = `
+                <div style="
+                    padding:30px;
+                    text-align:center;
+                    color:#9b1c1c;
+                ">
+                    <strong>
+                        Map could not be loaded.
+                    </strong>
+
+                    <br><br>
+
+                    Check your internet connection
+                    and refresh the page.
+                </div>
+            `;
+
+        }
+
+        return;
+
+    }
+
+
+    map = L.map(
+        "map"
+    ).setView(
+        [
+            DEFAULT_LAT,
+            DEFAULT_LON
+        ],
+        10
+    );
+
+
+    L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+
+            maxZoom: 19,
+
+            attribution:
+                "&copy; OpenStreetMap contributors"
+
+        }
+    ).addTo(map);
+
+
+    map.on(
+        "click",
+        function(event) {
+
+            selectMapLocation(
+                event.latlng.lat,
+                event.latlng.lng
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   MAP LOCATION SELECTION
+   ========================================================= */
+
+function selectMapLocation(
+    latitude,
+    longitude
+) {
+
+    if (!map) {
+
+        return;
+
+    }
+
+
+    if (marker) {
+
+        map.removeLayer(
+            marker
+        );
+
+    }
+
+
+    marker = L.marker(
+        [
+            latitude,
+            longitude
+        ]
+    ).addTo(
+        map
+    );
+
+
+    marker.bindPopup(
+        `
+            <strong>
+                Selected Location
+            </strong>
+            <br>
+            Latitude:
+            ${latitude.toFixed(5)}
+            <br>
+            Longitude:
+            ${longitude.toFixed(5)}
+        `
+    ).openPopup();
+
+
+    map.setView(
+        [
+            latitude,
+            longitude
+        ],
+        11
+    );
+
+
+    loadLocationData(
+        latitude,
+        longitude
+    );
+
+}
+
+
+/* =========================================================
+   LOAD LOCATION DATA
+   ========================================================= */
+
+async function loadLocationData(
+    latitude,
+    longitude
+) {
+
+    showLoading(
+        true
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/location-data",
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            latitude:
+                                latitude,
+
+                            longitude:
+                                longitude
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.error ||
+                "Unable to retrieve location data."
+            );
+
+        }
+
+
+        updateDashboard(
+            data
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        alert(
+            "Unable to load data: " +
+            error.message
+        );
+
+
+    } finally {
+
+        showLoading(
+            false
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   UPDATE DASHBOARD
+   ========================================================= */
+
+function updateDashboard(
+    data
+) {
+
+    const weather =
+        data.weather || {};
+
+
+    const currentWeather =
+        weather.current || {};
+
+
+    const currentAir =
+        data.current_air || {};
+
+
+    const aqi =
+        data.current_aqi || {};
+
+
+    const forecast =
+        data.coupling_forecast || [];
+
+
+    /* =====================================================
+       CURRENT WEATHER
+       ===================================================== */
+
+    setText(
+        "temperatureValue",
+        formatValue(
+            currentWeather.temperature_2m,
+            " °C"
+        )
+    );
+
+
+    setText(
+        "humidityValue",
+        formatValue(
+            currentWeather.relative_humidity_2m,
+            " %"
+        )
+    );
+
+
+    setText(
+        "windValue",
+        formatValue(
+            currentWeather.wind_speed_10m,
+            " km/h"
+        )
+    );
+
+
+    setText(
+        "pressureValue",
+        formatValue(
+            currentWeather.pressure_msl,
+            " hPa"
+        )
+    );
+
+
+    /* =====================================================
+       AIR QUALITY
+       ===================================================== */
+
+    setText(
+        "pm25Value",
+        formatValue(
+            currentAir.pm25,
+            ""
+        )
+    );
+
+
+    setText(
+        "pm10Value",
+        formatValue(
+            currentAir.pm10,
+            ""
+        )
+    );
+
+
+    setText(
+        "no2Value",
+        formatValue(
+            currentAir.no2,
+            ""
+        )
+    );
+
+
+    setText(
+        "ozoneValue",
+        formatValue(
+            currentAir.ozone,
+            ""
+        )
+    );
+
+
+    /* =====================================================
+       AQI
+       ===================================================== */
+
+    if (
+        aqi &&
+        aqi.aqi !== null &&
+        aqi.aqi !== undefined
+    ) {
+
+        setText(
+            "aqiNumber",
+            aqi.aqi
+        );
+
+
+        setText(
+            "aqiCategory",
+            aqi.category || "Unknown"
+        );
+
+    }
+
+
+    /* =====================================================
+       COUPLING
+       ===================================================== */
+
+    if (forecast.length > 0) {
+
+        const current =
+            forecast[0];
+
+
+        updateCouplingCards(
+            current
+        );
+
+
+        updateWhyPollution(
+            current
+        );
+
+
+        updateHealthAdvice(
+            current,
+            aqi
+        );
+
+
+        createCharts(
+            forecast
+        );
+
+
+        createForecastTable(
+            forecast
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   COUPLING CARDS
+   ========================================================= */
+
+function updateCouplingCards(
+    item
+) {
+
+    if (!item) {
+
+        return;
+
+    }
+
+
+    /* PBL */
+
+    setText(
+        "pblCurrent",
+        item.pbl_height !== null
+            ? Math.round(
+                item.pbl_height
+              ) + " m"
+            : "--"
+    );
+
+
+    setText(
+        "pblStatus",
+        getPblStatus(
+            item.pbl_height
+        )
+    );
+
+
+    /* INVERSION */
+
+    const inversion =
+        item.inversion || {};
+
+
+    setText(
+        "inversionCurrent",
+        inversion.level || "--"
+    );
+
+
+    setText(
+        "inversionStatus",
+        inversion.score !== undefined
+            ? "Score " +
+              inversion.score
+            : "--"
+    );
+
+
+    /* DISPERSION */
+
+    const dispersion =
+        item.dispersion || {};
+
+
+    setText(
+        "dispersionCurrent",
+        dispersion.level || "--"
+    );
+
+
+    setText(
+        "dispersionStatus",
+        dispersion.score !== undefined
+            ? "Score " +
+              dispersion.score
+            : "--"
+    );
+
+
+    /* ACCUMULATION */
+
+    const accumulation =
+        item.accumulation || {};
+
+
+    setText(
+        "accumulationCurrent",
+        accumulation.level || "--"
+    );
+
+
+    setText(
+        "accumulationStatus",
+        accumulation.score !== undefined
+            ? "Score " +
+              accumulation.score
+            : "--"
+    );
+
+}
+
+
+/* =========================================================
+   PBL STATUS
+   ========================================================= */
+
+function getPblStatus(
+    pbl
+) {
+
+    if (
+        pbl === null ||
+        pbl === undefined
+    ) {
+
+        return "--";
+
+    }
+
+
+    if (pbl < 400) {
+
+        return "Very Low Mixing";
+
+    }
+
+
+    if (pbl < 700) {
+
+        return "Low Mixing";
+
+    }
+
+
+    if (pbl < 1200) {
+
+        return "Moderate Mixing";
+
+    }
+
+
+    return "Good Mixing";
+
+}
+
+
+/* =========================================================
+   WHY POLLUTION
+   ========================================================= */
+
+function updateWhyPollution(
+    item
+) {
+
+    const container =
+        document.getElementById(
+            "whyPollution"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    const reasons = [];
+
+
+    /* PBL */
+
+    if (
+        item.pbl_height !== null &&
+        item.pbl_height !== undefined
+    ) {
+
+        if (item.pbl_height < 400) {
+
+            reasons.push({
+
+                title:
+                    "🔴 Very low PBL height",
+
+                text:
+                    "The shallow atmospheric boundary layer "
+                    + "can limit vertical mixing and allow "
+                    + "pollutants to remain concentrated near "
+                    + "the surface."
+
+            });
+
+        } else if (
+            item.pbl_height < 700
+        ) {
+
+            reasons.push({
+
+                title:
+                    "🟠 Low PBL height",
+
+                text:
+                    "Vertical mixing is relatively limited, "
+                    + "which can increase pollution accumulation."
+
+            });
+
+        }
+
+    }
+
+
+    /* WIND */
+
+    if (
+        item.wind_speed !== null &&
+        item.wind_speed !== undefined
+    ) {
+
+        if (
+            item.wind_speed < 4
+        ) {
+
+            reasons.push({
+
+                title:
+                    "🔴 Weak surface wind",
+
+                text:
+                    "Weak wind can reduce horizontal dispersion "
+                    + "of pollutants."
+
+            });
+
+        } else if (
+            item.wind_speed < 8
+        ) {
+
+            reasons.push({
+
+                title:
+                    "🟠 Moderate-to-weak wind",
+
+                text:
+                    "Pollution can disperse, but not as efficiently "
+                    + "as during stronger wind conditions."
+
+            });
+
+        }
+
+    }
+
+
+    /* INVERSION */
+
+    if (
+        item.inversion
+    ) {
+
+        if (
+            item.inversion.level === "Strong"
+        ) {
+
+            reasons.push({
+
+                title:
+                    "🔴 Strong stability / inversion proxy",
+
+                text:
+                    item.inversion.message
+
+            });
+
+        } else if (
+            item.inversion.level === "Moderate"
+        ) {
+
+            reasons.push({
+
+                title:
+                    "🟠 Moderate atmospheric stability",
+
+                text:
+                    item.inversion.message
+
+            });
+
+        }
+
+    }
+
+
+    /* ACCUMULATION */
+
+    if (
+        item.accumulation &&
+        item.accumulation.level === "High"
+    ) {
+
+        reasons.push({
+
+            title:
+                "🔴 High accumulation potential",
+
+            text:
+                "The combined meteorological conditions "
+                + "are unfavorable for pollutant dispersion."
+
+        });
+
+    }
+
+
+    /* GOOD CONDITIONS */
+
+    if (
+        reasons.length === 0
+    ) {
+
+        reasons.push({
+
+            title:
+                "🟢 No major trapping signal detected",
+
+            text:
+                "Current meteorological conditions appear "
+                + "relatively favorable for pollutant dispersion."
+
+        });
+
+    }
+
+
+    container.innerHTML =
+        reasons.map(
+            function(reason) {
+
+                return `
+                    <div class="reason">
+
+                        <strong>
+                            ${reason.title}
+                        </strong>
+
+                        <span>
+                            ${reason.text}
+                        </span>
+
+                    </div>
+                `;
+
+            }
+        ).join("");
+
+}
+
+
+/* =========================================================
+   HEALTH ADVISORY
+   ========================================================= */
+
+function updateHealthAdvice(
+    item,
+    aqi
+) {
+
+    const value =
+        aqi && aqi.aqi !== null
+            ? Number(aqi.aqi)
+            : 0;
+
+
+    let general =
+        "Normal outdoor activity is reasonable while following local conditions.";
+
+
+    let children =
+        "Monitor local air quality and avoid prolonged strenuous activity if pollution rises.";
+
+
+    let older =
+        "Consider reducing prolonged outdoor exposure during higher pollution periods.";
+
+
+    let respiratory =
+        "People with respiratory sensitivity may wish to reduce prolonged outdoor exposure when pollution is elevated.";
+
+
+    let workers =
+        "Plan strenuous outdoor work around periods with better dispersion where practical.";
+
+
+    let athletes =
+        "Consider moving intense outdoor exercise indoors when pollution is elevated.";
+
+
+    if (value > 100) {
+
+        general =
+            "Consider reducing prolonged outdoor exposure, especially during pollution peaks.";
+
+        children =
+            "Consider reducing prolonged or strenuous outdoor activity.";
+
+        older =
+            "Consider limiting prolonged outdoor exposure during higher-pollution periods.";
+
+        respiratory =
+            "People with respiratory sensitivity should consider reducing outdoor exposure and follow their clinician's advice.";
+
+        workers =
+            "Consider exposure-reduction measures and schedule strenuous work during better air-quality periods when practical.";
+
+        athletes =
+            "Consider indoor training or lower-intensity activity during higher-pollution periods.";
+
+    }
+
+
+    if (value > 200) {
+
+        general =
+            "Avoid prolonged or strenuous outdoor activity during the highest-pollution periods.";
+
+        children =
+            "Avoid strenuous outdoor activity during high-pollution periods.";
+
+        older =
+            "Reduce outdoor exposure during high-pollution periods.";
+
+        respiratory =
+            "People with respiratory conditions should take extra care to reduce exposure and follow their healthcare plan.";
+
+        workers =
+            "Use appropriate workplace exposure controls and consider reducing strenuous outdoor work during pollution peaks.";
+
+        athletes =
+            "Prefer indoor training while pollution remains high.";
+
+    }
+
+
+    setText(
+        "healthGeneral",
+        general
+    );
+
+
+    setText(
+        "healthChildren",
+        children
+    );
+
+
+    setText(
+        "healthOlder",
+        older
+    );
+
+
+    setText(
+        "healthRespiratory",
+        respiratory
+    );
+
+
+    setText(
+        "healthWorkers",
+        workers
+    );
+
+
+    setText(
+        "healthAthletes",
+        athletes
+    );
+
+}
+
+
+/* =========================================================
+   CREATE CHARTS
+   ========================================================= */
+
+function createCharts(forecast) {
+
+    if (!forecast || forecast.length === 0) {
+        console.warn("No forecast data available for charts.");
+        return;
+    }
+
+
+    const aqiCanvas =
+        document.getElementById("aqiChart");
+
+    const pm25Canvas =
+        document.getElementById("pm25Chart");
+
+    const pblCanvas =
+        document.getElementById("pblChart");
+
+    const couplingCanvas =
+        document.getElementById("couplingChart");
+
+
+    if (!aqiCanvas) {
+        console.error("aqiChart canvas not found.");
+    }
+
+    if (!pm25Canvas) {
+        console.error("pm25Chart canvas not found.");
+    }
+
+    if (!pblCanvas) {
+        console.error("pblChart canvas not found.");
+    }
+
+    if (!couplingCanvas) {
+        console.error("couplingChart canvas not found.");
+    }
+
+
+    const labels = forecast.map(function(item) {
+
+        return formatTime(item.time);
+
+    });
+
+
+    const aqiValues = forecast.map(function(item) {
+
+        if (
+            item.aqi &&
+            item.aqi.aqi !== null &&
+            item.aqi.aqi !== undefined
+        ) {
+            return Number(item.aqi.aqi);
+        }
+
+        return null;
+
+    });
+
+
+    const pm25Values = forecast.map(function(item) {
+
+        return numberOrNull(item.pm25);
+
+    });
+
+
+    const pblValues = forecast.map(function(item) {
+
+        return numberOrNull(item.pbl_height);
+
+    });
+
+
+    const dispersionValues = forecast.map(function(item) {
+
+        if (item.dispersion) {
+
+            return numberOrNull(
+                item.dispersion.score
+            );
+
+        }
+
+        return null;
+
+    });
+
+
+    const accumulationValues = forecast.map(function(item) {
+
+        if (item.accumulation) {
+
+            return numberOrNull(
+                item.accumulation.score
+            );
+
+        }
+
+        return null;
+
+    });
+
+
+    /* =====================================================
+       AQI CHART
+       ===================================================== */
+
+    if (aqiCanvas) {
+
+        destroyChart(aqiChart);
+
+
+        aqiChart = new Chart(
+            aqiCanvas,
+            {
+
+                type: "line",
+
+                data: {
+
+                    labels: labels,
+
+                    datasets: [
+
+                        {
+
+                            label: "AQI",
+
+                            data: aqiValues,
+
+                            borderWidth: 2,
+
+                            tension: 0.3,
+
+                            fill: false
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    interaction: {
+
+                        mode: "index",
+
+                        intersect: false
+
+                    },
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true,
+
+                            title: {
+
+                                display: true,
+
+                                text: "AQI"
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       PM2.5 CHART
+       ===================================================== */
+
+    if (pm25Canvas) {
+
+        destroyChart(pm25Chart);
+
+
+        pm25Chart = new Chart(
+            pm25Canvas,
+            {
+
+                type: "line",
+
+                data: {
+
+                    labels: labels,
+
+                    datasets: [
+
+                        {
+
+                            label: "PM2.5 µg/m³",
+
+                            data: pm25Values,
+
+                            borderWidth: 2,
+
+                            tension: 0.3,
+
+                            fill: false
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       PBL CHART
+       ===================================================== */
+
+    if (pblCanvas) {
+
+        destroyChart(pblChart);
+
+
+        pblChart = new Chart(
+            pblCanvas,
+            {
+
+                type: "line",
+
+                data: {
+
+                    labels: labels,
+
+                    datasets: [
+
+                        {
+
+                            label: "PBL Height (m)",
+
+                            data: pblValues,
+
+                            borderWidth: 2,
+
+                            tension: 0.3,
+
+                            fill: false
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       DISPERSION / ACCUMULATION CHART
+       ===================================================== */
+
+    if (couplingCanvas) {
+
+        destroyChart(couplingChart);
+
+
+        couplingChart = new Chart(
+            couplingCanvas,
+            {
+
+                type: "line",
+
+                data: {
+
+                    labels: labels,
+
+                    datasets: [
+
+                        {
+
+                            label: "Dispersion Score",
+
+                            data: dispersionValues,
+
+                            borderWidth: 2,
+
+                            tension: 0.3,
+
+                            fill: false
+
+                        },
+
+                        {
+
+                            label: "Accumulation Score",
+
+                            data: accumulationValues,
+
+                            borderWidth: 2,
+
+                            tension: 0.3,
+
+                            fill: false
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+}
+
+/* =========================================================
+   FORECAST TABLE
+   ========================================================= */
+
+function createForecastTable(
+    forecast
+) {
+
+    const table =
+        document.getElementById(
+            "forecastTable"
+        );
+
+
+    if (!table) {
+
+        return;
+
+    }
+
+
+    table.innerHTML = "";
+
+
+    forecast.forEach(
+        function(item) {
+
+            const tr =
+                document.createElement(
+                    "tr"
+                );
+
+
+            const aqi =
+                item.aqi &&
+                item.aqi.aqi !== null
+                    ? item.aqi.aqi
+                    : "--";
+
+
+            const inversion =
+                item.inversion
+                    ? item.inversion.level
+                    : "--";
+
+
+            const dispersion =
+                item.dispersion
+                    ? item.dispersion.level
+                    : "--";
+
+
+            const accumulation =
+                item.accumulation
+                    ? item.accumulation.level
+                    : "--";
+
+
+            tr.innerHTML = `
+
+                <td>
+                    ${formatTime(item.time)}
+                </td>
+
+                <td>
+                    ${formatNumber(item.temperature)}
+                    °C
+                </td>
+
+                <td>
+                    ${formatNumber(item.wind_speed)}
+                    km/h
+                </td>
+
+                <td>
+                    ${formatNumber(item.pm25)}
+                </td>
+
+                <td>
+                    ${formatNumber(item.pm10)}
+                </td>
+
+                <td>
+                    ${aqi}
+                </td>
+
+                <td>
+                    ${formatNumber(item.pbl_height)}
+                    m
+                </td>
+
+                <td>
+                    ${inversion}
+                </td>
+
+                <td>
+                    ${dispersion}
+                </td>
+
+                <td>
+                    ${accumulation}
+                </td>
+
+            `;
+
+
+            table.appendChild(
+                tr
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SEARCH FORM
+   ========================================================= */
+
+document
+    .getElementById(
+        "searchForm"
+    )
+    .addEventListener(
+        "submit",
+        function() {
+
+            showLoading(
+                true
+            );
+
+        }
+    );
+
+
+/* =========================================================
+   HELPER: SET TEXT
+   ========================================================= */
+
+function setText(
+    id,
+    value
+) {
+
+    const element =
+        document.getElementById(
+            id
+        );
+
+
+    if (element) {
+
+        element.textContent =
+            value;
+
+    }
+
+}
+
+
+/* =========================================================
+   HELPER: FORMAT VALUE
+   ========================================================= */
+
+function formatValue(
+    value,
+    suffix
+) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "--";
+
+    }
+
+
+    return value + suffix;
+
+}
+
+
+/* =========================================================
+   HELPER: FORMAT NUMBER
+   ========================================================= */
+
+function formatNumber(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        Number.isNaN(
+            Number(value)
+        )
+    ) {
+
+        return "--";
+
+    }
+
+
+    return Number(
+        value
+    ).toFixed(1);
+
+}
+
+
+/* =========================================================
+   HELPER: NUMBER OR NULL
+   ========================================================= */
+
+function numberOrNull(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return null;
+
+    }
+
+
+    const number =
+        Number(value);
+
+
+    if (
+        Number.isNaN(number)
+    ) {
+
+        return null;
+
+    }
+
+
+    return number;
+
+}
+
+
+/* =========================================================
+   HELPER: FORMAT TIME
+   ========================================================= */
+
+function formatTime(
+    timestamp
+) {
+
+    if (!timestamp) {
+
+        return "--";
+
+    }
+
+
+    try {
+
+        const date =
+            new Date(
+                timestamp
+            );
+
+
+        return date.toLocaleString(
+            [],
+            {
+
+                month:
+                    "short",
+
+                day:
+                    "numeric",
+
+                hour:
+                    "2-digit",
+
+                minute:
+                    "2-digit"
+
+            }
+        );
+
+    } catch (
+        error
+    ) {
+
+        return timestamp;
+
+    }
+
+}
+
+
+/* =========================================================
+   HELPER: DESTROY CHART
+   ========================================================= */
+
+function destroyChart(
+    chart
+) {
+
+    if (chart) {
+
+        chart.destroy();
+
+    }
+
+}
+
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+function showLoading(
+    visible
+) {
+
+    const loading =
+        document.getElementById(
+            "loading"
+        );
+
+
+    if (!loading) {
+
+        return;
+
+    }
+
+
+    loading.style.display =
+        visible
+            ? "flex"
+            : "none";
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        initializeMap();
+
+    }
+);
+
+</script>
+
 
 </body>
 
