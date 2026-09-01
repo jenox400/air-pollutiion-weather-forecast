@@ -1,1726 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>
-        Air-Couple | Air Pollution & Weather Forecast
-    </title>
-
-
-    <!-- =====================================================
-         LEAFLET
-         ===================================================== -->
-
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    >
-
-
-    <!-- =====================================================
-         CHART.JS
-         ===================================================== -->
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
-    <!-- =====================================================
-         STYLES
-         ===================================================== -->
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
-
-        body {
-
-            margin: 0;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            background:
-                #f4f7fb;
-
-            color:
-                #172033;
-        }
-
-
-        /* =================================================
-           HEADER
-           ================================================= */
-
-        header {
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #0b3d91,
-                    #1464c4
-                );
-
-            color:
-                white;
-
-            padding:
-                24px 30px;
-
-            box-shadow:
-                0 4px 15px
-                rgba(0,0,0,0.15);
-        }
-
-
-        header h1 {
-
-            margin:
-                0 0 6px 0;
-
-            font-size:
-                30px;
-        }
-
-
-        header p {
-
-            margin:
-                0;
-
-            opacity:
-                0.9;
-        }
-
-
-        /* =================================================
-           MAIN
-           ================================================= */
-
-        .container {
-
-            width:
-                min(1400px, 94%);
-
-            margin:
-                25px auto;
-        }
-
-
-        /* =================================================
-           SEARCH
-           ================================================= */
-
-        .search-card {
-
-            background:
-                white;
-
-            padding:
-                20px;
-
-            border-radius:
-                14px;
-
-            box-shadow:
-                0 4px 16px
-                rgba(0,0,0,0.08);
-
-            margin-bottom:
-                22px;
-        }
-
-
-        .search-form {
-
-            display:
-                flex;
-
-            gap:
-                10px;
-
-            flex-wrap:
-                wrap;
-        }
-
-
-        .search-form input {
-
-            flex:
-                1;
-
-            min-width:
-                220px;
-
-            padding:
-                13px 15px;
-
-            border:
-                1px solid #ccd4df;
-
-            border-radius:
-                9px;
-
-            font-size:
-                16px;
-        }
-
-
-        .search-form button {
-
-            border:
-                none;
-
-            padding:
-                13px 22px;
-
-            border-radius:
-                9px;
-
-            background:
-                #1464c4;
-
-            color:
-                white;
-
-            cursor:
-                pointer;
-
-            font-size:
-                16px;
-
-            font-weight:
-                bold;
-        }
-
-
-        .search-form button:hover {
-
-            background:
-                #0b4e9c;
-        }
-
-
-        .map-help {
-
-            margin-top:
-                10px;
-
-            color:
-                #667085;
-
-            font-size:
-                14px;
-        }
-
-
-        /* =================================================
-           ERROR
-           ================================================= */
-
-        .error-box {
-
-            background:
-                #fff0f0;
-
-            color:
-                #9b1c1c;
-
-            border:
-                1px solid #f3b3b3;
-
-            padding:
-                14px;
-
-            border-radius:
-                10px;
-
-            margin-bottom:
-                20px;
-        }
-
-
-        /* =================================================
-           MAP
-           ================================================= */
-
-        .map-card {
-
-            background:
-                white;
-
-            border-radius:
-                14px;
-
-            padding:
-                15px;
-
-            box-shadow:
-                0 4px 16px
-                rgba(0,0,0,0.08);
-
-            margin-bottom:
-                22px;
-        }
-
-
-        #map {
-
-            width:
-                100%;
-
-            height:
-                480px;
-
-            border-radius:
-                12px;
-        }
-
-
-        /* =================================================
-           LOCATION
-           ================================================= */
-
-        .location-title {
-
-            margin:
-                0 0 5px 0;
-        }
-
-
-        .coordinates {
-
-            color:
-                #667085;
-
-            font-size:
-                14px;
-        }
-
-
-        /* =================================================
-           GRID
-           ================================================= */
-
-        .grid {
-
-            display:
-                grid;
-
-            grid-template-columns:
-                repeat(
-                    auto-fit,
-                    minmax(220px, 1fr)
-                );
-
-            gap:
-                16px;
-
-            margin-bottom:
-                22px;
-        }
-
-
-        /* =================================================
-           CARDS
-           ================================================= */
-
-        .card {
-
-            background:
-                white;
-
-            border-radius:
-                14px;
-
-            padding:
-                20px;
-
-            box-shadow:
-                0 4px 16px
-                rgba(0,0,0,0.08);
-        }
-
-
-        .card h3 {
-
-            margin-top:
-                0;
-
-            margin-bottom:
-                14px;
-        }
-
-
-        .metric {
-
-            font-size:
-                30px;
-
-            font-weight:
-                bold;
-
-            margin:
-                5px 0;
-        }
-
-
-        .metric-label {
-
-            color:
-                #667085;
-
-            font-size:
-                14px;
-        }
-
-
-        .small-value {
-
-            font-size:
-                18px;
-
-            font-weight:
-                bold;
-        }
-
-
-        /* =================================================
-           AQI
-           ================================================= */
-
-        .aqi-card {
-
-            text-align:
-                center;
-        }
-
-
-        .aqi-number {
-
-            font-size:
-                55px;
-
-            font-weight:
-                800;
-
-            margin:
-                5px 0;
-        }
-
-
-        .aqi-category {
-
-            display:
-                inline-block;
-
-            padding:
-                7px 16px;
-
-            border-radius:
-                30px;
-
-            font-weight:
-                bold;
-
-            background:
-                #e9eef5;
-        }
-
-
-        /* =================================================
-           COUPLING GRID
-           ================================================= */
-
-        .coupling-grid {
-
-            display:
-                grid;
-
-            grid-template-columns:
-                repeat(
-                    auto-fit,
-                    minmax(200px, 1fr)
-                );
-
-            gap:
-                15px;
-        }
-
-
-        .coupling-item {
-
-            border:
-                1px solid #e0e6ef;
-
-            border-radius:
-                12px;
-
-            padding:
-                16px;
-
-            background:
-                #f9fbfd;
-        }
-
-
-        .coupling-value {
-
-            font-size:
-                24px;
-
-            font-weight:
-                bold;
-
-            margin:
-                8px 0;
-        }
-
-
-        .status {
-
-            display:
-                inline-block;
-
-            padding:
-                5px 10px;
-
-            border-radius:
-                20px;
-
-            font-size:
-                13px;
-
-            font-weight:
-                bold;
-
-            background:
-                #e8edf3;
-        }
-
-
-        /* =================================================
-           RISK
-           ================================================= */
-
-        .risk-list {
-
-            display:
-                grid;
-
-            gap:
-                10px;
-        }
-
-
-        .risk-item {
-
-            padding:
-                14px;
-
-            border-radius:
-                10px;
-
-            background:
-                #f5f7fa;
-
-            border-left:
-                5px solid #7b8794;
-        }
-
-
-        .risk-title {
-
-            font-weight:
-                bold;
-
-            margin-bottom:
-                4px;
-        }
-
-
-        /* =================================================
-           WHY SECTION
-           ================================================= */
-
-        .reason {
-
-            padding:
-                13px 15px;
-
-            margin:
-                9px 0;
-
-            border-radius:
-                10px;
-
-            background:
-                #f6f8fb;
-        }
-
-
-        .reason strong {
-
-            display:
-                block;
-
-            margin-bottom:
-                4px;
-        }
-
-
-        /* =================================================
-           HEALTH
-           ================================================= */
-
-        .health-grid {
-
-            display:
-                grid;
-
-            grid-template-columns:
-                repeat(
-                    auto-fit,
-                    minmax(220px, 1fr)
-                );
-
-            gap:
-                14px;
-        }
-
-
-        .health-card {
-
-            border:
-                1px solid #e1e7ef;
-
-            border-radius:
-                12px;
-
-            padding:
-                16px;
-
-            background:
-                #fbfcfe;
-        }
-
-
-        .health-card h4 {
-
-            margin:
-                0 0 8px 0;
-        }
-
-
-        /* =================================================
-           CHARTS
-           ================================================= */
-
-        .chart-card {
-
-            background:
-                white;
-
-            border-radius:
-                14px;
-
-            padding:
-                20px;
-
-            box-shadow:
-                0 4px 16px
-                rgba(0,0,0,0.08);
-
-            margin-bottom:
-                20px;
-        }
-
-
-        .chart-container {
-
-            position:
-                relative;
-
-            height:
-                350px;
-        }
-
-
-        /* =================================================
-           FORECAST TABLE
-           ================================================= */
-
-        .table-wrapper {
-
-            overflow-x:
-                auto;
-        }
-
-
-        table {
-
-            width:
-                100%;
-
-            border-collapse:
-                collapse;
-
-            min-width:
-                900px;
-        }
-
-
-        th,
-        td {
-
-            padding:
-                11px;
-
-            border-bottom:
-                1px solid #e5e9ef;
-
-            text-align:
-                left;
-
-            font-size:
-                14px;
-        }
-
-
-        th {
-
-            background:
-                #f4f7fa;
-
-            font-weight:
-                bold;
-        }
-
-
-        /* =================================================
-           LOADING
-           ================================================= */
-
-        #loading {
-
-            display:
-                none;
-
-            position:
-                fixed;
-
-            inset:
-                0;
-
-            background:
-                rgba(
-                    255,
-                    255,
-                    255,
-                    0.82
-                );
-
-            z-index:
-                9999;
-
-            align-items:
-                center;
-
-            justify-content:
-                center;
-
-            font-size:
-                22px;
-
-            font-weight:
-                bold;
-        }
-
-
-        /* =================================================
-           FOOTER
-           ================================================= */
-
-        footer {
-
-            text-align:
-                center;
-
-            padding:
-                25px;
-
-            color:
-                #667085;
-
-            font-size:
-                13px;
-        }
-
-
-        /* =================================================
-           MOBILE
-           ================================================= */
-
-        @media (
-            max-width: 700px
-        ) {
-
-            header {
-
-                padding:
-                    20px;
-            }
-
-
-            header h1 {
-
-                font-size:
-                    23px;
-            }
-
-
-            .container {
-
-                width:
-                    95%;
-            }
-
-
-            #map {
-
-                height:
-                    360px;
-            }
-
-
-            .chart-container {
-
-                height:
-                    280px;
-            }
-
-        }
-
-    </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIR-COUPLE | Weather + Air Intelligence</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{
+  --bg:#f5f7fb; --surface:#fff; --surface-2:#f8fafc; --text:#122033; --muted:#617086;
+  --line:#dfe6ef; --brand:#1457a6; --brand-2:#0d3f7c; --good:#17834a; --warn:#d98b00;
+  --bad:#d83b55; --danger:#7b2cbf; --shadow:0 12px 30px rgba(22,44,76,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif;font-size:16px;line-height:1.5}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.topbar{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:1200px;margin:auto;padding:13px 20px;display:flex;align-items:center;gap:18px}
+.brand{display:flex;align-items:center;gap:10px;min-width:max-content}
+.brand-mark{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#1457a6,#1f83d5);color:#fff;display:grid;place-items:center;font-weight:800;box-shadow:0 7px 15px rgba(20,87,166,.22)}
+.brand-name{font-size:20px;font-weight:800;letter-spacing:.02em}.brand-sub{font-size:11px;color:var(--muted);display:block}
+.location-bar{margin-left:auto;display:flex;gap:8px;align-items:center;min-width:0}
+.location-pill{border:1px solid var(--line);background:var(--surface-2);padding:8px 11px;border-radius:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
+.icon-btn,.secondary-btn{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:10px;padding:8px 11px}
+.icon-btn:hover,.secondary-btn:hover{border-color:#b9c7d8;background:#f7faff}
+.container{width:min(1200px,calc(100% - 32px));margin:24px auto 50px}
+.hero-title{margin:10px 0 4px;font-size:30px;letter-spacing:-.02em}.hero-sub{margin:0;color:var(--muted)}
+.search-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;margin:20px 0}
+.search-input{width:100%;border:1px solid #cbd6e4;border-radius:12px;padding:13px 15px;background:#fff;outline:none}.search-input:focus{border-color:#5793cf;box-shadow:0 0 0 3px rgba(38,120,194,.12)}
+.primary-btn{border:0;border-radius:12px;padding:13px 18px;background:var(--brand);color:#fff;font-weight:700}.primary-btn:hover{background:var(--brand-2)}
+.status-line{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:14px;margin:-7px 0 18px}.dot{width:8px;height:8px;border-radius:50%;background:#22a765}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.current-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:16px}
+.weather-card,.aqi-card{padding:22px}
+.card-kicker{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800}.location-title{font-size:22px;margin:4px 0 0}.coordinates{font-size:12px;color:var(--muted)}
+.weather-main{display:flex;align-items:end;gap:12px;margin-top:17px}.temperature{font-size:62px;line-height:.95;font-weight:800;letter-spacing:-.05em}.unit{font-size:25px;color:var(--muted);margin-bottom:4px}.weather-note{color:var(--muted);margin:7px 0 0}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px}.metric{padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}.metric-label{font-size:12px;color:var(--muted)}.metric-value{font-weight:800;font-size:17px;margin-top:2px}
+.aqi-main{display:flex;align-items:center;gap:18px;margin-top:14px}.aqi-number{font-size:62px;line-height:1;font-weight:850;letter-spacing:-.05em}.aqi-category{font-size:22px;font-weight:800}.trend{font-size:13px;color:var(--muted);margin-top:3px}.aqi-bar{height:9px;border-radius:999px;background:linear-gradient(90deg,#19a7e0 0 20%,#58c64c 20% 40%,#f1bb29 40% 60%,#ef476f 60% 80%,#9c2dd0 80%);margin:20px 0 10px}.pollutants{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.pollutant{padding:11px;border:1px solid var(--line);border-radius:12px}.pollutant strong{display:block;font-size:18px}.pollutant span{font-size:12px;color:var(--muted)}
+.insight{margin-top:16px;padding:20px 22px;border-radius:18px;background:#0f477f;color:#fff;box-shadow:var(--shadow)}.insight-head{display:flex;justify-content:space-between;gap:20px;align-items:center}.insight h2{font-size:19px;margin:0}.insight p{margin:6px 0 0;color:#dbeaf8}.insight-tag{background:rgba(255,255,255,.13);padding:7px 10px;border-radius:9px;font-size:12px;white-space:nowrap}
+.section{margin-top:28px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:12px}.section h2{margin:0;font-size:22px}.section-desc{margin:2px 0 0;color:var(--muted);font-size:14px}
+
+.coupled-section{margin-top:28px}.coupled-card{padding:20px}.coupled-summary{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;align-items:stretch}.coupled-main{padding:18px;border:1px solid var(--line);border-radius:15px;background:var(--surface-2)}.coupled-kicker{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800}.coupled-title{font-size:25px;font-weight:850;margin:3px 0}.coupled-copy{margin:5px 0 0;color:var(--muted)}.coupled-signal{display:flex;flex-direction:column;justify-content:center;padding:18px;border:1px solid var(--line);border-radius:15px;background:#fff}.signal-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:800}.signal-value{font-size:24px;font-weight:850;margin-top:3px}.signal-note{font-size:13px;color:var(--muted);margin-top:4px}.timeline{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:14px}.time-card{padding:13px;border:1px solid var(--line);border-radius:13px;background:#fff;min-width:0}.time-card.best{border-color:#75a98a;box-shadow:0 0 0 2px rgba(23,131,74,.08)}.time-label{font-size:12px;color:var(--muted);font-weight:700}.time-aqi{font-size:23px;font-weight:850;margin-top:2px}.time-meta{font-size:12px;color:var(--muted);margin-top:2px}.time-status{display:inline-block;margin-top:9px;padding:4px 7px;border-radius:999px;background:#edf3f9;font-size:11px;font-weight:800}.time-status.good{background:#e9f6ee;color:#17663c}.time-status.warn{background:#fff5dc;color:#875900}.time-status.bad{background:#fff0f2;color:#a52d43}.coupled-note{margin:12px 0 0;color:var(--muted);font-size:13px}.
+.activity-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.activity{padding:16px;border:1px solid var(--line);border-radius:15px;background:#fff}.activity-top{display:flex;justify-content:space-between;gap:10px;align-items:start}.activity-name{font-weight:800}.activity-score{font-size:12px;font-weight:800;padding:5px 8px;border-radius:999px;background:#edf3f9;color:#42566e}.activity p{margin:10px 0 0;color:var(--muted);font-size:13px}
+.window-card{padding:20px}.window-grid{display:grid;grid-template-columns:1fr 260px;gap:22px;align-items:center}.window-track{height:18px;border-radius:999px;background:#e8edf3;position:relative;overflow:hidden}.window-good{position:absolute;left:0;width:0;height:100%;background:#53a878;border-radius:999px}.window-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:7px}.window-value{font-size:26px;font-weight:800}.window-note{color:var(--muted);font-size:13px}
+.reason-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.reason{padding:16px;border:1px solid var(--line);border-radius:15px;background:#fff}.reason strong{display:block;margin-bottom:5px}.reason span{color:var(--muted);font-size:13px}
+.voice-wrap{margin-top:28px}.voice-card{padding:22px;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}.voice-header h2{margin:0;font-size:22px}.voice-subtitle{margin:4px 0;color:var(--muted)}.voice-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:15px 0}.voice-language{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}.voice-button{width:58px;height:58px;border:0;border-radius:50%;background:#1457a6;color:#fff;font-size:25px}.voice-button.listening{background:#c62843;animation:voicePulse 1.2s infinite}@keyframes voicePulse{50%{transform:scale(1.08)}}.voice-action{border:1px solid var(--line);background:#f7f9fc;padding:10px 14px;border-radius:10px;font-weight:700}.voice-status{font-weight:650;color:#3d5169}.voice-location-note{font-size:12px;color:var(--muted);margin-top:6px}.voice-result{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.voice-panel{padding:15px;border:1px solid var(--line);border-radius:13px;background:var(--surface-2)}.voice-panel-title{font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}.voice-panel-text{min-height:32px;white-space:pre-wrap}.voice-error{display:none;margin-top:12px;padding:10px 12px;border-radius:10px;background:#fff0f0;color:#9b1c1c;border:1px solid #f1c2c2}
+.details{margin-top:28px}.details summary{cursor:pointer;list-style:none;padding:18px 20px;font-weight:800;background:#fff;border:1px solid var(--line);border-radius:15px}.details summary::-webkit-details-marker{display:none}.details[open] summary{border-radius:15px 15px 0 0}.advanced-body{padding:18px;background:#fff;border:1px solid var(--line);border-top:0;border-radius:0 0 15px 15px}.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.chart-card{height:290px;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}.chart-card canvas{width:100%!important;height:100%!important}.table-wrap{overflow:auto;margin-top:14px}table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}th{background:#f4f7fa}.advanced-copy{color:var(--muted);font-size:13px}.technical-reasons{margin-top:15px}
+.map-dialog{width:min(900px,calc(100% - 24px));border:0;border-radius:18px;padding:0;box-shadow:0 25px 70px rgba(10,31,57,.3)}.map-dialog::backdrop{background:rgba(9,24,41,.56)}.map-head{display:flex;justify-content:space-between;align-items:center;padding:15px 18px;border-bottom:1px solid var(--line)}.map-head h2{margin:0;font-size:18px}.map-body{padding:12px}.map-help{color:var(--muted);font-size:13px;margin:0 0 9px}.map-container{height:470px;border-radius:13px;overflow:hidden}.map-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:10px}
+#loading{display:none;position:fixed;inset:0;background:rgba(245,247,251,.75);backdrop-filter:blur(3px);z-index:3000;align-items:center;justify-content:center;font-weight:800;color:#17395e}.spinner{width:32px;height:32px;border:4px solid #cdd9e6;border-top-color:#1457a6;border-radius:50%;animation:spin .8s linear infinite;margin-right:10px}@keyframes spin{to{transform:rotate(360deg)}}
+footer{max-width:1200px;margin:0 auto;padding:10px 20px 35px;color:var(--muted);font-size:12px;text-align:center}
+body.large-text{font-size:18px}.large-text .temperature,.large-text .aqi-number{font-size:70px}.large-text .activity p,.large-text .reason span{font-size:15px}
+body.high-contrast{--bg:#fff;--surface:#fff;--surface-2:#fff;--text:#000;--muted:#26384c;--line:#333}body.high-contrast .insight{background:#000;color:#fff}
+body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+body.dark{--bg:#0e1622;--surface:#151f2c;--surface-2:#101923;--text:#edf4fb;--muted:#a9b8c8;--line:#2d3c4e;--shadow:0 12px 30px rgba(0,0,0,.25)}body.dark .topbar{background:rgba(21,31,44,.96)}body.dark .search-input,body.dark .voice-language,body.dark .icon-btn,body.dark .secondary-btn,body.dark .voice-action,body.dark .activity,body.dark .reason,body.dark .chart-card,body.dark .details summary,body.dark .advanced-body,body.dark .voice-card,body.dark .window-card,body.dark .weather-card,body.dark .aqi-card{background:var(--surface)}body.dark th{background:#1b2837}body.dark .map-dialog{background:var(--surface)}
+.settings{position:relative}.settings-panel{position:absolute;right:0;top:48px;width:245px;padding:15px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 45px rgba(20,40,70,.18);display:none}.settings-panel.open{display:block}.settings-panel h3{margin:0 0 10px;font-size:15px}.setting-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:13px}.switch{appearance:none;width:42px;height:23px;border-radius:999px;background:#c7d1dc;position:relative;cursor:pointer}.switch::after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:2.5px;left:3px;transition:.2s}.switch:checked{background:#1457a6}.switch:checked::after{left:21px}
+@media(max-width:900px){.current-grid,.window-grid{grid-template-columns:1fr}.activity-grid{grid-template-columns:repeat(2,1fr)}.reason-grid{grid-template-columns:1fr 1fr}.metrics{grid-template-columns:repeat(2,1fr)}.chart-grid{grid-template-columns:1fr}}
+@media(max-width:650px){.topbar-inner{flex-wrap:wrap}.location-bar{width:100%;margin-left:0}.location-pill{flex:1;max-width:none}.search-row{grid-template-columns:1fr}.activity-grid,.reason-grid,.voice-result{grid-template-columns:1fr}.container{width:min(100% - 20px,1200px)}.hero-title{font-size:25px}.temperature,.aqi-number{font-size:50px}.metrics{grid-template-columns:1fr 1fr}.pollutants{grid-template-columns:1fr 1fr}.map-container{height:55vh}}
+@media (max-width:900px){.coupled-summary{grid-template-columns:1fr}.timeline{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:560px){.timeline{grid-template-columns:repeat(2,1fr)}}
+</style>
 </head>
-
-
 <body>
+<div id="loading"><div class="spinner"></div> Loading environmental data…</div>
 
-
-<!-- =====================================================
-     LOADING
-     ===================================================== -->
-
-<div id="loading">
-
-    Loading environmental data...
-
-</div>
-
-
-<!-- =====================================================
-     HEADER
-     ===================================================== -->
-
-<header>
-
-    <h1>
-        AIR-COUPLE
-    </h1>
-
-    <p>
-        Air Pollution & Weather Coupled Forecasting System
-    </p>
-
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">AC</div>
+      <div><div class="brand-name">AIR-COUPLE</div><span class="brand-sub">Weather + Air Intelligence</span></div>
+    </div>
+    <div class="location-bar">
+      <div class="location-pill" id="headerLocation">📍 {{ (location or {}).get("name", "Delhi") }}</div>
+      <button class="secondary-btn" id="useLocationBtn" type="button">Use my location</button>
+      <button class="secondary-btn" id="chooseMapBtn" type="button">Choose location</button>
+      <div class="settings">
+        <button class="icon-btn" id="settingsBtn" type="button" aria-expanded="false" aria-label="Accessibility settings">⚙</button>
+        <div class="settings-panel" id="settingsPanel">
+          <h3>Accessibility</h3>
+          <div class="setting-row"><span>Dark mode</span><input class="switch" id="darkToggle" type="checkbox"></div>
+          <div class="setting-row"><span>Large text</span><input class="switch" id="largeToggle" type="checkbox"></div>
+          <div class="setting-row"><span>High contrast</span><input class="switch" id="contrastToggle" type="checkbox"></div>
+          <div class="setting-row"><span>Reduce motion</span><input class="switch" id="motionToggle" type="checkbox"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </header>
 
+<main class="container">
+  <h1 class="hero-title">Know the air. Understand the weather. Plan your day.</h1>
+  <p class="hero-sub">A simple environmental outlook for the selected location.</p>
 
-<div class="container">
+  <form class="search-row" id="searchForm" method="POST">
+    <input class="search-input" id="cityInput" name="city" placeholder="Search a city or location…" autocomplete="off">
+    <button class="primary-btn" type="submit">Search</button>
+    <button class="secondary-btn" id="heroMapBtn" type="button">📍 Map</button>
+  </form>
+  <div class="status-line"><span class="dot"></span><span id="dataStatus">Using the latest available forecast for this location.</span></div>
+
+  <section class="current-grid" aria-label="Current conditions">
+    <article class="card weather-card">
+      <div class="card-kicker">Weather right now</div>
+      <h2 class="location-title" id="locationTitle">{{ (location or {}).get("name", "Delhi") }}</h2>
+      <div class="coordinates" id="locationCoordinates">{{ (location or {}).get("latitude", "") }} · {{ (location or {}).get("longitude", "") }}</div>
+      <div class="weather-main"><div class="temperature" id="temperatureValue">{{ (weather or {}).get("current", {}).get("temperature_2m", "--") }}</div><div class="unit">°C</div></div>
+      <p class="weather-note">Current temperature</p>
+      <div class="metrics">
+        <div class="metric"><div class="metric-label">Humidity</div><div class="metric-value" id="humidityValue">{{ (weather or {}).get("current", {}).get("relative_humidity_2m", "--") }}%</div></div>
+        <div class="metric"><div class="metric-label">Wind</div><div class="metric-value" id="windValue">{{ (weather or {}).get("current", {}).get("wind_speed_10m", "--") }} km/h</div></div>
+        <div class="metric"><div class="metric-label">Pressure</div><div class="metric-value" id="pressureValue">{{ (weather or {}).get("current", {}).get("pressure_msl", "--") }} hPa</div></div>
+        <div class="metric"><div class="metric-label">Outdoor signal</div><div class="metric-value" id="weatherSignal">—</div></div>
+      </div>
+    </article>
+
+    <article class="card aqi-card">
+      <div class="card-kicker">Air quality right now</div>
+      <div class="aqi-main"><div class="aqi-number" id="aqiNumber">{{ (current_aqi or {}).get("aqi", "--") }}</div><div><div class="aqi-category" id="aqiCategory">{{ (current_aqi or {}).get("category", "Unknown") }}</div><div class="trend" id="aqiTrend">Current reading</div></div></div>
+      <div class="aqi-bar" aria-hidden="true"></div>
+      <div class="pollutants">
+        <div class="pollutant"><strong id="pm25Value">{{ (current_air or {}).get("pm25", "--") }}</strong><span>PM₂.₅ µg/m³</span></div>
+        <div class="pollutant"><strong id="pm10Value">{{ (current_air or {}).get("pm10", "--") }}</strong><span>PM₁₀ µg/m³</span></div>
+        <div class="pollutant"><strong id="no2Value">{{ (current_air or {}).get("no2", "--") }}</strong><span>NO₂ µg/m³</span></div>
+      </div>
+      <p class="weather-note" id="aqiMeaning">Air quality is combined with weather conditions to estimate how pollution may behave next.</p>
+    </article>
+  </section>
+
+  <section class="insight" aria-live="polite">
+    <div class="insight-head"><div><h2 id="insightTitle">What you should know</h2><p id="insightText">AIR-COUPLE connects weather conditions with pollution indicators so the forecast is easier to act on.</p></div><div class="insight-tag" id="insightTag">COUPLED OUTLOOK</div></div>
+  </section>
 
 
-    <!-- =================================================
-         SEARCH
-         ================================================= -->
-
-    <div class="search-card">
-
-        <form
-            method="POST"
-            class="search-form"
-            id="searchForm"
-        >
-
-            <input
-                type="text"
-                name="city"
-                id="cityInput"
-                placeholder="Search city or location..."
-                autocomplete="off"
-            >
-
-            <button type="submit">
-                Search Location
-            </button>
-
-        </form>
-
-
-        <div class="map-help">
-
-            Or click anywhere on the map to analyse that
-            location.
-
+  <section class="section coupled-section" aria-label="Coupled forecast outlook">
+    <div class="section-head"><div><h2>Next few hours</h2><p class="section-desc">See when pollution is likely to be easier or harder to disperse.</p></div></div>
+    <article class="card coupled-card">
+      <div class="coupled-summary">
+        <div class="coupled-main">
+          <div class="coupled-kicker">Weather + air quality</div>
+          <div class="coupled-title" id="coupledHeadline">Checking the coupled outlook…</div>
+          <p class="coupled-copy" id="coupledExplanation">The forecast combines air-quality readings with atmospheric conditions such as wind, mixing and accumulation.</p>
         </div>
+        <div class="coupled-signal">
+          <div class="signal-label">Current dispersion</div>
+          <div class="signal-value" id="coupledDispersion">—</div>
+          <div class="signal-note" id="coupledDispersionNote">Waiting for the selected location.</div>
+        </div>
+      </div>
+      <div class="timeline" id="coupledTimeline"></div>
+      <p class="coupled-note" id="coupledMethod">This is a planning signal, not a replacement for the underlying air-quality reading.</p>
+    </article>
+  </section>
 
+  <section class="section">
+    <div class="section-head"><div><h2>What can I do today?</h2><p class="section-desc">Practical guidance based on current air quality and weather.</p></div></div>
+    <div class="activity-grid">
+      <article class="activity"><div class="activity-top"><span class="activity-name">🚶 Walking</span><span class="activity-score" id="walkScore">Moderate</span></div><p id="walkAdvice">Short walks are easier to plan when pollution is lower.</p></article>
+      <article class="activity"><div class="activity-top"><span class="activity-name">🏃 Running</span><span class="activity-score" id="runScore">Check conditions</span></div><p id="runAdvice">Check the air-quality trend before intense outdoor exercise.</p></article>
+      <article class="activity"><div class="activity-top"><span class="activity-name">🚴 Cycling</span><span class="activity-score" id="cycleScore">Check conditions</span></div><p id="cycleAdvice">Use the better part of the day when possible.</p></article>
+      <article class="activity"><div class="activity-top"><span class="activity-name">🧑‍🔧 Outdoor work</span><span class="activity-score" id="workScore">Check conditions</span></div><p id="workAdvice">Long outdoor exposure is better planned around lower pollution.</p></article>
     </div>
+  </section>
 
+  <section class="section card window-card">
+    <div class="section-head"><div><h2>Best time outside</h2><p class="section-desc">A simple planning signal from the forecast.</p></div><div class="window-value" id="bestWindow">Finding…</div></div>
+    <div class="window-grid"><div><div class="window-track"><div class="window-good" id="windowGood"></div></div><div class="window-labels"><span>Now</span><span>6 AM</span><span>12 PM</span><span>6 PM</span><span>12 AM</span></div></div><div><div class="window-note" id="windowNote">The recommended window updates when a new location is selected.</div></div></div>
+  </section>
 
-    <!-- =================================================
-         ERROR
-         ================================================= -->
-
-    {% if error %}
-
-    <div class="error-box">
-
-        {{ error }}
-
+  <section class="section">
+    <div class="section-head"><div><h2>Why is pollution behaving this way?</h2><p class="section-desc">The forecast explains the environmental signals behind the result.</p></div></div>
+    <div class="reason-grid" id="whyPollution">
+      <div class="reason"><strong>Weather + air quality</strong><span>Select a location to see the coupled explanation.</span></div>
     </div>
-
-    {% endif %}
-
-
-    <!-- =================================================
-         LOCATION
-         ================================================= -->
-
-    {% if location %}
-
-    <div class="card">
-
-        <h2 class="location-title">
-
-            {{ (location or {}).get("name", "Selected Location") }}
-
-        </h2>
-
-        <div class="coordinates">
-
-            Latitude:
-            {{ (location or {}).get("latitude", "") }}
-
-            &nbsp;&nbsp;|&nbsp;&nbsp;
-
-            Longitude:
-            {{ (location or {}).get("longitude", "") }}
-
+    <div class="technical-reasons">
+      <details class="details" id="advancedDetails">
+        <summary>View technical details</summary>
+        <div class="advanced-body">
+          <p class="advanced-copy">These indicators remain available for technical review without overwhelming the main citizen-facing view.</p>
+          <div class="metrics" style="margin-top:12px">
+            <div class="metric"><div class="metric-label">PBL height</div><div class="metric-value" id="pblCurrent">--</div><div class="metric-label" id="pblStatus">--</div></div>
+            <div class="metric"><div class="metric-label">Inversion</div><div class="metric-value" id="inversionCurrent">--</div><div class="metric-label" id="inversionStatus">--</div></div>
+            <div class="metric"><div class="metric-label">Dispersion</div><div class="metric-value" id="dispersionCurrent">--</div><div class="metric-label" id="dispersionStatus">--</div></div>
+            <div class="metric"><div class="metric-label">Accumulation</div><div class="metric-value" id="accumulationCurrent">--</div><div class="metric-label" id="accumulationStatus">--</div></div>
+          </div>
+          <div class="chart-grid" style="margin-top:14px">
+            <div class="chart-card"><canvas id="aqiChart"></canvas></div>
+            <div class="chart-card"><canvas id="pm25Chart"></canvas></div>
+            <div class="chart-card"><canvas id="pblChart"></canvas></div>
+            <div class="chart-card"><canvas id="couplingChart"></canvas></div>
+          </div>
+          <div class="table-wrap"><table><thead><tr><th>Time</th><th>Temp</th><th>Wind</th><th>PM2.5</th><th>PM10</th><th>AQI</th><th>PBL</th><th>Inversion</th><th>Dispersion</th><th>Accumulation</th></tr></thead><tbody id="forecastTable"></tbody></table></div>
+          <div style="display:none"><span id="ozoneValue">--</span><span id="healthGeneral">--</span><span id="healthChildren">--</span><span id="healthOlder">--</span><span id="healthRespiratory">--</span><span id="healthWorkers">--</span><span id="healthAthletes">--</span></div>
         </div>
-
+      </details>
     </div>
+  </section>
 
-    {% endif %}
-
-
-    <!-- =================================================
-         MAP
-         ================================================= -->
-
-    <div class="map-card">
-
-        <h3>
-            Interactive Environmental Map
-        </h3>
-
-        <div id="map"></div>
-
+  <section class="voice-wrap" id="voiceAssistant" aria-label="AIR-COUPLE Voice Assistant">
+    <div class="voice-card">
+      <div class="voice-header"><h2>🎙️ Ask AIR-COUPLE</h2><p class="voice-subtitle">Ask about weather, rainfall, air quality, pollution, or outdoor conditions.</p></div>
+      <div class="voice-controls">
+        <select id="voiceLanguage" class="voice-language" aria-label="Voice language"><option value="hi-IN">हिन्दी / Hinglish</option><option value="en-IN">English (India)</option><option value="en-US">English</option></select>
+        <button type="button" id="voiceButton" class="voice-button" aria-label="Start voice input" title="Start voice input">🎙️</button>
+        <button type="button" id="speakAnswerButton" class="voice-action">🔊 Read Answer</button>
+        <button type="button" id="stopSpeechButton" class="voice-action">⏹ Stop</button>
+      </div>
+      <div id="voiceStatus" class="voice-status" role="status" aria-live="polite">Tap the microphone and ask a question.</div>
+      <div class="voice-location-note">📍 Voice uses the location currently selected on the page.</div>
+      <div class="voice-result"><div class="voice-panel"><div class="voice-panel-title">Your question</div><div id="voiceQuestion" class="voice-panel-text">—</div></div><div class="voice-panel"><div class="voice-panel-title">AIR-COUPLE answer</div><div id="voiceAnswer" class="voice-panel-text">Ask me something about the selected location.</div></div></div>
+      <div id="voiceError" class="voice-error" role="alert"></div>
     </div>
-
-
-    <!-- =================================================
-         CURRENT CONDITIONS
-         ================================================= -->
-
-    <div id="dashboard">
-
-
-
-
-
-        <!-- =============================================
-             CURRENT WEATHER
-             ============================================= -->
-
-        <div class="grid">
-
-            <div class="card">
-
-                <h3>
-                    Temperature
-                </h3>
-
-                <div
-                    class="metric"
-                    id="temperatureValue"
-                >
-
-                    {{ (weather or {}).get("current", {}).get(
-                        "temperature_2m",
-                        "--"
-                    ) }} °C
-
-                </div>
-
-                <div class="metric-label">
-                    Current temperature
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <h3>
-                    Humidity
-                </h3>
-
-                <div
-                    class="metric"
-                    id="humidityValue"
-                >
-
-                    {{ (weather or {}).get("current", {}).get(
-                        "relative_humidity_2m",
-                        "--"
-                    ) }} %
-
-                </div>
-
-                <div class="metric-label">
-                    Relative humidity
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <h3>
-                    Wind
-                </h3>
-
-                <div
-                    class="metric"
-                    id="windValue"
-                >
-
-                    {{ (weather or {}).get("current", {}).get(
-                        "wind_speed_10m",
-                        "--"
-                    ) }}
-
-                </div>
-
-                <div class="metric-label">
-                    Wind speed (km/h)
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <h3>
-                    Pressure
-                </h3>
-
-                <div
-                    class="metric"
-                    id="pressureValue"
-                >
-
-                    {{ (weather or {}).get("current", {}).get(
-                        "pressure_msl",
-                        "--"
-                    ) }}
-
-                </div>
-
-                <div class="metric-label">
-                    Mean sea-level pressure (hPa)
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- =============================================
-             AIR QUALITY
-             ============================================= -->
-
-        <div class="grid">
-
-            <div class="card">
-
-                <h3>
-                    PM2.5
-                </h3>
-
-                <div
-                    class="metric"
-                    id="pm25Value"
-                >
-
-                    {% if (air_quality or {}).get("hourly", {}).get("pm2_5") %}
-
-                        {{ (air_quality or {}).get("hourly", {}).get("pm2_5")[0] }}
-
-                    {% else %}
-
-                        --
-
-                    {% endif %}
-
-                </div>
-
-                <div class="metric-label">
-                    µg/m³
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <h3>
-                    PM10
-                </h3>
-
-                <div
-                    class="metric"
-                    id="pm10Value"
-                >
-
-                    {% if (air_quality or {}).get("hourly", {}).get("pm10") %}
-
-                        {{ (air_quality or {}).get("hourly", {}).get("pm10")[0] }}
-
-                    {% else %}
-
-                        --
-
-                    {% endif %}
-
-                </div>
-
-                <div class="metric-label">
-                    µg/m³
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <h3>
-                    NO₂
-                </h3>
-
-                <div
-                    class="metric"
-                    id="no2Value"
-                >
-
-                    {% if (air_quality or {}).get("hourly", {}).get("nitrogen_dioxide") %}
-
-                        {{ (air_quality or {}).get("hourly", {}).get("nitrogen_dioxide")[0] }}
-
-                    {% else %}
-
-                        --
-
-                    {% endif %}
-
-                </div>
-
-                <div class="metric-label">
-                    µg/m³
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <h3>
-                    O₃
-                </h3>
-
-                <div
-                    class="metric"
-                    id="ozoneValue"
-                >
-
-                    {% if (air_quality or {}).get("hourly", {}).get("ozone") %}
-
-                        {{ (air_quality or {}).get("hourly", {}).get("ozone")[0] }}
-
-                    {% else %}
-
-                        --
-
-                    {% endif %}
-
-                </div>
-
-                <div class="metric-label">
-                    µg/m³
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- =============================================
-             AQI + COUPLING
-             ============================================= -->
-
-        <div class="grid">
-
-
-            <div class="card aqi-card">
-
-                <h3>
-                    Current AQI
-                </h3>
-
-                <div
-                    class="aqi-number"
-                    id="aqiNumber"
-                >
-
-                    {% if current_aqi and (current_aqi or {}).get("aqi") is not none %}
-
-                        {{ (current_aqi or {}).get("aqi") }}
-
-                    {% else %}
-
-                        --
-
-                    {% endif %}
-
-                </div>
-
-
-                <div
-                    class="aqi-category"
-                    id="aqiCategory"
-                >
-
-                    {% if current_aqi %}
-
-                        {{ (current_aqi or {}).get(
-                            "category",
-                            "Unknown"
-                        ) }}
-
-                    {% else %}
-
-                        Unknown
-
-                    {% endif %}
-
-                </div>
-
-
-                {% if current_aqi and (current_aqi or {}).get("primary_pollutant") %}
-
-                <p>
-
-                    Primary pollutant:
-
-                    <strong>
-
-                        {{ (current_aqi or {}).get(
-                            "primary_pollutant"
-                        ) }}
-
-                    </strong>
-
-                </p>
-
-                {% endif %}
-
-            </div>
-
-
-            <div class="card">
-
-                <h3>
-                    Environmental Risk
-                </h3>
-
-
-                <div
-                    id="overallRisk"
-                    class="metric"
-                >
-
-                    {% if risk %}
-
-                        {{ (risk or {}).get(
-                            "overall_risk",
-                            (risk or {}).get(
-                                "level",
-                                "Available"
-                            )
-                        ) }}
-
-                    {% else %}
-
-                        --
-
-                    {% endif %}
-
-                </div>
-
-
-                <div class="metric-label">
-
-                    Based on current environmental
-                    conditions
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- =============================================
-             COUPLING CONDITIONS
-             ============================================= -->
-
-        <div class="card">
-
-            <h2>
-                🌫️ Weather–Pollution Coupling
-            </h2>
-
-            <p>
-
-                These indicators describe how current
-                atmospheric conditions may influence
-                pollution dispersion or accumulation.
-
-            </p>
-
-
-            <div
-                class="coupling-grid"
-                id="currentCoupling"
-            >
-
-                <div class="coupling-item">
-
-                    <div>
-                        PBL Height
-                    </div>
-
-                    <div
-                        class="coupling-value"
-                        id="pblCurrent"
-                    >
-                        --
-                    </div>
-
-                    <span
-                        class="status"
-                        id="pblStatus"
-                    >
-                        --
-                    </span>
-
-                </div>
-
-
-                <div class="coupling-item">
-
-                    <div>
-                        Atmospheric Stability
-                    </div>
-
-                    <div
-                        class="coupling-value"
-                        id="inversionCurrent"
-                    >
-                        --
-                    </div>
-
-                    <span
-                        class="status"
-                        id="inversionStatus"
-                    >
-                        --
-                    </span>
-
-                </div>
-
-
-                <div class="coupling-item">
-
-                    <div>
-                        Dispersion
-                    </div>
-
-                    <div
-                        class="coupling-value"
-                        id="dispersionCurrent"
-                    >
-                        --
-                    </div>
-
-                    <span
-                        class="status"
-                        id="dispersionStatus"
-                    >
-                        --
-                    </span>
-
-                </div>
-
-
-                <div class="coupling-item">
-
-                    <div>
-                        Accumulation
-                    </div>
-
-                    <div
-                        class="coupling-value"
-                        id="accumulationCurrent"
-                    >
-                        --
-                    </div>
-
-                    <span
-                        class="status"
-                        id="accumulationStatus"
-                    >
-                        --
-                    </span>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- =============================================
-             WHY IS POLLUTION CHANGING?
-             ============================================= -->
-
-        <div class="card">
-
-            <h2>
-                🧠 Why could pollution change?
-            </h2>
-
-            <div id="whyPollution">
-
-                Loading explanation...
-
-            </div>
-
-        </div>
-
-
-        <!-- =============================================
-             HEALTH ADVISORY
-             ============================================= -->
-
-        <div class="card">
-
-            <h2>
-                👥 Environmental Health Advisory
-            </h2>
-
-            <p>
-
-                These are exposure-reduction recommendations,
-                not medical diagnoses.
-
-            </p>
-
-
-            <div class="health-grid">
-
-                <div class="health-card">
-
-                    <h4>
-                        General Population
-                    </h4>
-
-                    <p id="healthGeneral">
-                        Loading...
-                    </p>
-
-                </div>
-
-
-                <div class="health-card">
-
-                    <h4>
-                        Children
-                    </h4>
-
-                    <p id="healthChildren">
-                        Loading...
-                    </p>
-
-                </div>
-
-
-                <div class="health-card">
-
-                    <h4>
-                        Older Adults
-                    </h4>
-
-                    <p id="healthOlder">
-                        Loading...
-                    </p>
-
-                </div>
-
-
-                <div class="health-card">
-
-                    <h4>
-                        Respiratory-Sensitive People
-                    </h4>
-
-                    <p id="healthRespiratory">
-                        Loading...
-                    </p>
-
-                </div>
-
-
-                <div class="health-card">
-
-                    <h4>
-                        Outdoor Workers
-                    </h4>
-
-                    <p id="healthWorkers">
-                        Loading...
-                    </p>
-
-                </div>
-
-
-                <div class="health-card">
-
-                    <h4>
-                        Athletes
-                    </h4>
-
-                    <p id="healthAthletes">
-                        Loading...
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- =============================================
-             24 / 48 / 72 HOUR CHART
-             ============================================= -->
-
-        <div class="chart-card">
-
-            <h2>
-                📈 72-Hour Coupled Forecast
-            </h2>
-
-            <p>
-
-                The forecast combines pollutant concentrations
-                with meteorological dispersion indicators.
-
-            </p>
-
-
-            <div class="chart-container">
-
-                <canvas id="aqiChart"></canvas>
-
-            </div>
-
-        </div>
-
-
-        <div class="chart-card">
-
-            <h2>
-                PM2.5 — 72 Hours
-            </h2>
-
-
-            <div class="chart-container">
-
-                <canvas id="pm25Chart"></canvas>
-
-            </div>
-
-        </div>
-
-
-        <div class="chart-card">
-
-            <h2>
-                PBL Height — 72 Hours
-            </h2>
-
-
-            <div class="chart-container">
-
-                <canvas id="pblChart"></canvas>
-
-            </div>
-
-        </div>
-
-
-        <div class="chart-card">
-
-            <h2>
-                Dispersion & Accumulation
-            </h2>
-
-
-            <div class="chart-container">
-
-                <canvas id="couplingChart"></canvas>
-
-            </div>
-
-        </div>
-
-
-        <!-- =============================================
-             FORECAST TABLE
-             ============================================= -->
-
-        <div class="card">
-
-            <h2>
-                📋 72-Hour Forecast Data
-            </h2>
-
-
-            <div class="table-wrapper">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                Time
-                            </th>
-
-                            <th>
-                                Temp
-                            </th>
-
-                            <th>
-                                Wind
-                            </th>
-
-                            <th>
-                                PM2.5
-                            </th>
-
-                            <th>
-                                PM10
-                            </th>
-
-                            <th>
-                                AQI
-                            </th>
-
-                            <th>
-                                PBL
-                            </th>
-
-                            <th>
-                                Stability
-                            </th>
-
-                            <th>
-                                Dispersion
-                            </th>
-
-                            <th>
-                                Accumulation
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody id="forecastTable">
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-
-    </div>
-
-
-</div>
-
-
-<footer>
-
-    AIR-COUPLE —
-    Physics-informed air pollution and weather
-    forecasting prototype.
-
-</footer>
-
-
-<!-- =====================================================
-     LEAFLET
-     ===================================================== -->
+  </section>
+</main>
+
+<dialog class="map-dialog" id="mapDialog">
+  <div class="map-head"><h2>Choose a location</h2><button class="icon-btn" id="closeMapBtn" type="button">✕</button></div>
+  <div class="map-body"><p class="map-help">Click anywhere on the map to analyse that location. Your selection updates the dashboard and voice assistant.</p><div id="map" class="map-container"></div><div class="map-actions"><button class="secondary-btn" id="closeMapBtn2" type="button">Close</button></div></div>
+</dialog>
+
+<footer>AIR-COUPLE · Weather + air pollution coupled forecasting prototype</footer>
 
 <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
@@ -1728,6 +227,65 @@
 
 
 <script>
+
+/* =========================================================
+   AIR-COUPLE API CLIENT
+   ---------------------------------------------------------
+   The UI talks to logical services instead of knowing which
+   weather/AQI provider is used. Provider changes stay in the
+   backend, so the frontend does not need a rewrite.
+   ========================================================= */
+window.AirCoupleAPI = {
+    endpoints: {
+        locationData: "/api/location-data",
+        voiceQuestion: "/api/voice-question"
+    },
+
+    async postJSON(endpoint, payload) {
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        let data = {};
+        try {
+            data = await response.json();
+        } catch (error) {
+            throw new Error("The server returned an invalid response.");
+        }
+
+        if (!response.ok || data.success === false) {
+            throw new Error(
+                data.error ||
+                "The AIR-COUPLE service is temporarily unavailable."
+            );
+        }
+
+        return data;
+    },
+
+    getLocationData(latitude, longitude) {
+        return this.postJSON(
+            this.endpoints.locationData,
+            { latitude, longitude }
+        );
+    },
+
+    askVoiceQuestion(question, latitude, longitude, location) {
+        return this.postJSON(
+            this.endpoints.voiceQuestion,
+            {
+                question,
+                latitude: Number(latitude),
+                longitude: Number(longitude),
+                location
+            }
+        );
+    }
+};
 
 /* =========================================================
    GLOBAL VARIABLES
@@ -1845,10 +403,30 @@ function selectMapLocation(
     longitude
 ) {
 
-    if (!map) {
+    latitude = Number(latitude);
+    longitude = Number(longitude);
 
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
         return;
+    }
 
+    // Single source of truth for the currently selected location.
+    window.selectedLatitude = latitude;
+    window.selectedLongitude = longitude;
+    window.currentLatitude = latitude;
+    window.currentLongitude = longitude;
+    window.selectedLocation = "Selected location";
+
+    const title = document.getElementById("locationTitle");
+    const header = document.getElementById("headerLocation");
+    const coords = document.getElementById("locationCoordinates");
+    if (title) title.textContent = "Selected location";
+    if (header) header.textContent = "📍 Selected location";
+    if (coords) coords.textContent = latitude.toFixed(5) + " · " + longitude.toFixed(5);
+
+    if (!map) {
+        loadLocationData(latitude, longitude);
+        return;
     }
 
 
@@ -1919,51 +497,31 @@ async function loadLocationData(
 
     try {
 
-        const response =
-            await fetch(
-                "/api/location-data",
-                {
-
-                    method:
-                        "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            latitude:
-                                latitude,
-
-                            longitude:
-                                longitude
-
-                        })
-
-                }
-            );
-
-
         const data =
-            await response.json();
-
-
-        if (!response.ok || !data.success) {
-
-            throw new Error(
-                data.error ||
-                "Unable to retrieve location data."
+            await window.AirCoupleAPI.getLocationData(
+                latitude,
+                longitude
             );
-
-        }
 
 
         updateDashboard(
             data
         );
+
+        const serverLocation = data.location || {};
+        const serverName = serverLocation.name || serverLocation.location_name;
+        const finalName = serverName || window.selectedLocation || "Selected location";
+        const finalLat = Number(serverLocation.latitude ?? latitude);
+        const finalLon = Number(serverLocation.longitude ?? longitude);
+        window.selectedLatitude = finalLat;
+        window.selectedLongitude = finalLon;
+        window.currentLatitude = finalLat;
+        window.currentLongitude = finalLon;
+        window.selectedLocation = finalName;
+        setText("locationTitle", finalName);
+        setText("headerLocation", "📍 " + finalName);
+        setText("locationCoordinates", Number.isFinite(finalLat) && Number.isFinite(finalLon) ? finalLat.toFixed(5) + " · " + finalLon.toFixed(5) : "");
+        setText("dataStatus", "Latest forecast loaded for " + finalName + ".");
 
 
     } catch (error) {
@@ -2052,7 +610,7 @@ function updateDashboard(
     setText(
         "pressureValue",
         formatValue(
-            currentWeather.pressure_msl,
+            currentWeather.pressure_msl ?? currentWeather.surface_pressure,
             " hPa"
         )
     );
@@ -2110,7 +668,7 @@ function updateDashboard(
 
         setText(
             "aqiNumber",
-            aqi.aqi
+            Math.round(Number(aqi.aqi))
         );
 
 
@@ -3158,7 +1716,17 @@ document
     )
     .addEventListener(
         "submit",
-        function() {
+        function(event) {
+
+            const input = document.getElementById("cityInput");
+            const city = input ? input.value.trim() : "";
+            if (!city) {
+                event.preventDefault();
+                const status = document.getElementById("dataStatus");
+                if (status) status.textContent = "Enter a city or location first.";
+                if (input) input.focus();
+                return;
+            }
 
             showLoading(
                 true
@@ -3396,6 +1964,841 @@ document.addEventListener(
 </script>
 
 
-</body>
+<script>
+window.__INITIAL_DATA__ = {{ (initial_data or {})|tojson }};
+</script>
 
+<script>
+(function(){
+  const qs=(s)=>document.querySelector(s);
+  const qid=(id)=>document.getElementById(id);
+  const initialName = (qid('locationTitle')?.textContent || 'Delhi').trim();
+  window.selectedLocation = initialName;
+
+  function num(v){ const n=Number(v); return Number.isFinite(n)?n:null; }
+  function scoreLabel(v){
+    const n=num(v); if(n===null) return 'Check conditions';
+    if(n<=50) return 'Good'; if(n<=100) return 'Moderate'; if(n<=150) return 'Poor'; return 'Avoid';
+  }
+  function advice(v, activity){
+    const n=num(v); if(n===null) return 'Check the latest air-quality trend before going outside.';
+    if(n<=50) return activity==='run'?'Good conditions for outdoor exercise.':'Conditions are generally favorable for this activity.';
+    if(n<=100) return activity==='run'?'Consider a shorter or lower-intensity session.':'Plan shorter exposure and use the better part of the day.';
+    if(n<=150) return 'Consider reducing prolonged outdoor exposure.';
+    return 'Avoid prolonged or strenuous outdoor exposure while pollution is high.';
+  }
+  function set(id,v){ if(qid(id)) qid(id).textContent=v; }
+
+  function coupledStatus(item){
+    const aqi=num(item?.aqi?.aqi);
+    const disp=String(item?.dispersion?.level||'').toLowerCase();
+    const acc=String(item?.accumulation?.level||'').toLowerCase();
+    if(aqi!==null && aqi>150 || acc==='high') return {label:'Avoid prolonged exposure', cls:'bad'};
+    if(aqi!==null && aqi>100 || disp==='low' || disp==='very low') return {label:'Use caution', cls:'warn'};
+    return {label:'More favorable', cls:'good'};
+  }
+
+  function updateCoupledOutlook(data){
+    const forecast=(data?.coupling_forecast||[]).slice(0,12);
+    const current=forecast[0]||{};
+    const disp=current.dispersion?.level || '—';
+    set('coupledDispersion',disp);
+    const acc=String(current.accumulation?.level||'').toLowerCase();
+    if(acc==='high') set('coupledDispersionNote','Pollution trapping potential is high.');
+    else if(String(disp).toLowerCase().includes('low')) set('coupledDispersionNote','Atmospheric mixing is limited.');
+    else set('coupledDispersionNote','Weather conditions are relatively supportive of dispersion.');
+
+    let headline='Conditions are changing through the day';
+    if(acc==='high') headline='Pollution may build up';
+    else if(String(disp).toLowerCase().includes('low')) headline='Pollution may disperse slowly';
+    else if(disp && disp!=='—') headline='Dispersion is relatively favorable';
+    set('coupledHeadline',headline);
+
+    const best=forecast.filter(x=>num(x?.aqi?.aqi)!==null).reduce((a,b)=>!a || num(b.aqi.aqi)<num(a.aqi.aqi)?b:a,null);
+    const container=qid('coupledTimeline');
+    if(!container) return;
+    if(!forecast.length){ container.innerHTML='<div class="time-card"><div class="time-label">No near-term forecast</div><div class="time-meta">Select a location to view the coupled outlook.</div></div>'; return; }
+    container.innerHTML=forecast.slice(0,6).map(item=>{
+      const aqi=num(item?.aqi?.aqi);
+      const st=coupledStatus(item);
+      const time=item?.time ? new Date(item.time).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}) : '—';
+      const isBest=best && item===best;
+      const temp=num(item?.temperature_2m);
+      const wind=num(item?.wind_speed);
+      return `<div class="time-card ${isBest?'best':''}"><div class="time-label">${time}${isBest?' · Best':''}</div><div class="time-aqi">AQI ${aqi===null?'—':Math.round(aqi)}</div><div class="time-meta">${temp===null?'—':Math.round(temp)+'°C'} · Wind ${wind===null?'—':Math.round(wind)+' km/h'}</div><span class="time-status ${st.cls}">${st.label}</span></div>`;
+    }).join('');
+
+    const bestTime=best?.time ? new Date(best.time).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}) : null;
+    set('coupledExplanation', bestTime ? `The near-term forecast shows the most favorable air-quality point around ${bestTime}. The coupled view also considers how atmospheric conditions affect dispersion.` : 'The forecast combines air-quality readings with atmospheric conditions such as wind, mixing and accumulation.');
+  }
+
+  function updateCitizenView(data){
+    updateCoupledOutlook(data);
+    const forecast=data?.coupling_forecast || [];
+    const current=forecast[0] || {};
+    const aqi=data?.current_aqi?.aqi ?? current?.aqi?.aqi;
+    const aqiNum=num(aqi);
+    const category=data?.current_aqi?.category || current?.aqi?.category || 'Unknown';
+    set('aqiTrend', forecast.length>1 && num(forecast[1]?.aqi?.aqi)>aqiNum ? '↑ Expected to increase' : 'Forecast trend available');
+    set('aqiMeaning', aqiNum!==null && aqiNum>100 ? 'Air pollution is elevated. Use the forecast trend to plan longer or strenuous outdoor activity.' : 'Air quality is currently lower, while weather conditions still influence how pollution disperses.');
+    set('weatherSignal', current.dispersion?.level || '—');
+    set('insightTag', current.accumulation?.level ? (current.accumulation.level.toUpperCase()+' ACCUMULATION') : 'COUPLED OUTLOOK');
+    if(current.accumulation?.level==='High'){
+      set('insightTitle','Pollution may build up');
+      set('insightText','The coupled forecast shows conditions that can make pollutant dispersion less efficient.');
+    } else if(current.dispersion?.level){
+      set('insightTitle','How the atmosphere is behaving');
+      set('insightText','Dispersion is '+String(current.dispersion.level).toLowerCase()+'. Weather conditions are being used to interpret the air-quality outlook.');
+    }
+    const activityIds=[['walk','Walking'],['run','Running'],['cycle','Cycling'],['work','Outdoor work']];
+    activityIds.forEach(([key])=>{set(key+'Score',scoreLabel(aqi));set(key+'Advice',advice(aqi,key));});
+    if(forecast.length){
+      const candidates=forecast.slice(0,24).filter(x=>num(x?.aqi?.aqi)!==null);
+      if(candidates.length){
+        const best=candidates.reduce((a,b)=>num(b.aqi.aqi)<num(a.aqi.aqi)?b:a);
+        const t=new Date(best.time);
+        const bestIndex=forecast.indexOf(best);
+        set('bestWindow',t.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}));
+        const bar=qid('windowGood');
+        if(bar && forecast.length>1){
+          const left=Math.max(0,Math.min(87,(bestIndex/(forecast.length-1))*100-6.25));
+          bar.style.left=left+'%';
+          bar.style.width='12.5%';
+        }
+        set('windowNote','The lowest forecast AQI in the near-term forecast occurs around this time. Weather conditions are also considered in the coupled outlook.');
+      } else {
+        set('bestWindow','Unavailable');
+        set('windowNote','The air-quality forecast does not contain usable AQI values for the near-term window.');
+        const bar=qid('windowGood');
+        if(bar) bar.style.width='0%';
+      }
+    } else {
+      set('bestWindow','Unavailable');
+      set('windowNote','No near-term coupled forecast is available for this location.');
+      const bar=qid('windowGood');
+      if(bar) bar.style.width='0%';
+    }
+    // Keep voice location synchronized with the current visible location.
+    const title=(qid('locationTitle')?.textContent || initialName).trim();
+    window.selectedLocation=title;
+    if(window.selectedLatitude==null && data?.location?.latitude) window.selectedLatitude=Number(data.location.latitude);
+    if(window.selectedLongitude==null && data?.location?.longitude) window.selectedLongitude=Number(data.location.longitude);
+  }
+
+  // Wrap the existing dashboard updater without changing its API contract.
+  if(typeof window.updateDashboard==='function'){
+    const original=window.updateDashboard;
+    window.updateDashboard=function(data){ original(data); updateCitizenView(data); };
+  }
+
+  function openMap(){
+    const d=qid('mapDialog');
+    if(d && typeof d.showModal==='function') d.showModal(); else d?.setAttribute('open','');
+    setTimeout(()=>{ if(typeof map!=='undefined' && map && map.invalidateSize) map.invalidateSize(); },80);
+  }
+  function closeMap(){ qid('mapDialog')?.close?.(); }
+  ['chooseMapBtn','heroMapBtn'].forEach(id=>qid(id)?.addEventListener('click',openMap));
+  ['closeMapBtn','closeMapBtn2'].forEach(id=>qid(id)?.addEventListener('click',closeMap));
+
+  qid('useLocationBtn')?.addEventListener('click',()=>{
+    if(!navigator.geolocation){
+      set('dataStatus','Location access is not available in this browser. You can search or choose a point on the map.');
+      return;
+    }
+
+    set('dataStatus','Requesting your location…');
+    navigator.geolocation.getCurrentPosition(pos=>{
+      const lat=Number(pos.coords.latitude);
+      const lon=Number(pos.coords.longitude);
+      if(!Number.isFinite(lat) || !Number.isFinite(lon)){
+        set('dataStatus','Your device returned an invalid location.');
+        return;
+      }
+
+      window.selectedLocation='Current location';
+      set('locationTitle','Current location');
+      set('headerLocation','📍 Current location');
+      set('locationCoordinates',lat.toFixed(5)+' · '+lon.toFixed(5));
+      set('dataStatus','Using your device location.');
+
+      // One selection call. It updates state, marker and dashboard data.
+      if(window.selectMapLocation) window.selectMapLocation(lat,lon);
+      closeMap();
+    },err=>{
+      let message='Location permission was not granted. You can search or choose a point on the map.';
+      if(err && err.code===1) message='Location permission was denied. You can search or choose a point on the map.';
+      if(err && err.code===2) message='Your location could not be determined. You can search or choose a point on the map.';
+      if(err && err.code===3) message='Location request timed out. You can search or choose a point on the map.';
+      set('dataStatus',message);
+    },{enableHighAccuracy:false,timeout:10000,maximumAge:300000});
+  });
+
+  qid('settingsBtn')?.addEventListener('click',()=>{
+    const p=qid('settingsPanel'); p.classList.toggle('open'); qid('settingsBtn').setAttribute('aria-expanded',p.classList.contains('open'));
+  });
+  document.addEventListener('click',e=>{ if(!e.target.closest('.settings')) qid('settingsPanel')?.classList.remove('open'); });
+  const bindToggle=(id,cls)=>qid(id)?.addEventListener('change',e=>document.body.classList.toggle(cls,e.target.checked));
+  bindToggle('darkToggle','dark'); bindToggle('largeToggle','large-text'); bindToggle('contrastToggle','high-contrast'); bindToggle('motionToggle','reduce-motion');
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    const title=(qid('locationTitle')?.textContent||initialName).trim();
+    window.selectedLocation=title;
+    if(qid('headerLocation')) qid('headerLocation').textContent='📍 '+title;
+    const lat='{{ (location or {}).get("latitude", "") }}', lon='{{ (location or {}).get("longitude", "") }}';
+    if(lat) window.selectedLatitude=Number(lat);
+    if(lon) window.selectedLongitude=Number(lon);
+
+    // Populate the dashboard immediately from the server-rendered payload.
+    // This avoids requiring a map click before AQI/coupling data appears.
+    if(window.__INITIAL_DATA__ && window.__INITIAL_DATA__.success !== false &&
+       typeof window.updateDashboard === 'function'){
+      window.updateDashboard(window.__INITIAL_DATA__);
+    }
+  });
+})();
+</script>
+<script>
+
+/* =========================================================
+   AIR-COUPLE VOICE ASSISTANT
+   ========================================================= */
+
+(function () {
+
+    "use strict";
+
+
+    /* -------------------------------------------------------
+       ELEMENTS
+       ------------------------------------------------------- */
+
+    const voiceButton =
+        document.getElementById(
+            "voiceButton"
+        );
+
+    const voiceLanguage =
+        document.getElementById(
+            "voiceLanguage"
+        );
+
+    const voiceStatus =
+        document.getElementById(
+            "voiceStatus"
+        );
+
+    const voiceQuestion =
+        document.getElementById(
+            "voiceQuestion"
+        );
+
+    const voiceAnswer =
+        document.getElementById(
+            "voiceAnswer"
+        );
+
+    const voiceError =
+        document.getElementById(
+            "voiceError"
+        );
+
+    const speakAnswerButton =
+        document.getElementById(
+            "speakAnswerButton"
+        );
+
+    const stopSpeechButton =
+        document.getElementById(
+            "stopSpeechButton"
+        );
+
+
+    /* -------------------------------------------------------
+       CHECK BROWSER SUPPORT
+       ------------------------------------------------------- */
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+
+    if (!SpeechRecognition) {
+
+        voiceButton.disabled = true;
+
+        voiceStatus.textContent =
+            "Voice input is not supported by this browser. " +
+            "Please use Google Chrome or Microsoft Edge.";
+
+        return;
+
+    }
+
+
+    /* -------------------------------------------------------
+       CREATE RECOGNITION
+       ------------------------------------------------------- */
+
+    const recognition =
+        new SpeechRecognition();
+
+
+    recognition.continuous = false;
+
+    recognition.interimResults = false;
+
+    recognition.maxAlternatives = 1;
+
+
+    /* -------------------------------------------------------
+       START LISTENING
+       ------------------------------------------------------- */
+
+    voiceButton.addEventListener(
+        "click",
+        function () {
+
+            hideVoiceError();
+
+            recognition.lang =
+                voiceLanguage.value;
+
+            try {
+
+                recognition.start();
+
+            } catch (error) {
+
+                console.log(
+                    "Speech recognition start:",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+
+    /* -------------------------------------------------------
+       LISTENING STARTED
+       ------------------------------------------------------- */
+
+    recognition.onstart =
+        function () {
+
+            voiceButton.classList.add(
+                "listening"
+            );
+
+            voiceButton.textContent =
+                "🛑";
+
+            voiceButton.setAttribute(
+                "aria-label",
+                "Stop voice input"
+            );
+
+            voiceStatus.textContent =
+                "Listening... Speak now.";
+
+        };
+
+
+    /* -------------------------------------------------------
+       SPEECH RESULT
+       ------------------------------------------------------- */
+
+    recognition.onresult =
+        async function (event) {
+
+            const result =
+                event.results[0][0];
+
+            const question =
+                result.transcript.trim();
+
+
+            voiceQuestion.textContent =
+                question;
+
+            voiceStatus.textContent =
+                "Understanding your question...";
+
+
+            await sendVoiceQuestion(
+                question
+            );
+
+        };
+
+
+    /* -------------------------------------------------------
+       LISTENING ENDED
+       ------------------------------------------------------- */
+
+    recognition.onend =
+        function () {
+
+            voiceButton.classList.remove(
+                "listening"
+            );
+
+            voiceButton.textContent =
+                "🎙️";
+
+            voiceButton.setAttribute(
+                "aria-label",
+                "Start voice input"
+            );
+
+        };
+
+
+    /* -------------------------------------------------------
+       SPEECH ERROR
+       ------------------------------------------------------- */
+
+    recognition.onerror =
+        function (event) {
+
+            voiceButton.classList.remove(
+                "listening"
+            );
+
+            voiceButton.textContent =
+                "🎙️";
+
+
+            let message =
+                "Unable to understand the voice input.";
+
+
+            if (
+                event.error ===
+                "not-allowed"
+            ) {
+
+                message =
+                    "Microphone permission was denied. " +
+                    "Please allow microphone access in your browser.";
+
+            }
+
+
+            else if (
+                event.error ===
+                "no-speech"
+            ) {
+
+                message =
+                    "I did not hear anything. " +
+                    "Please try again.";
+
+            }
+
+
+            else if (
+                event.error ===
+                "network"
+            ) {
+
+                message =
+                    "Speech recognition needs an internet connection.";
+
+            }
+
+
+            showVoiceError(
+                message
+            );
+
+            voiceStatus.textContent =
+                "Tap the microphone to try again.";
+
+        };
+
+
+    /* =======================================================
+       SEND QUESTION TO FLASK
+       ======================================================= */
+
+    async function sendVoiceQuestion(
+        question
+    ) {
+
+        try {
+
+            /*
+             * ------------------------------------------------
+             * FIND CURRENT LOCATION
+             * ------------------------------------------------
+             *
+             * We first look for common variables used by
+             * the existing map/location code.
+             *
+             * If your current page exposes a selected marker,
+             * this allows voice to automatically use it.
+             */
+
+            let latitude = null;
+
+            let longitude = null;
+
+            let locationName =
+                "this location";
+
+
+            /*
+             * Try common global variables.
+             */
+
+            if (
+                typeof window.selectedLatitude !==
+                "undefined"
+            ) {
+
+                latitude =
+                    window.selectedLatitude;
+
+            }
+
+
+            if (
+                typeof window.selectedLongitude !==
+                "undefined"
+            ) {
+
+                longitude =
+                    window.selectedLongitude;
+
+            }
+
+
+            if (
+                typeof window.selectedLocation !==
+                "undefined"
+            ) {
+
+                locationName =
+                    window.selectedLocation;
+
+            }
+
+
+            /*
+             * Other common variable names.
+             */
+
+            if (
+                latitude === null &&
+                typeof window.currentLatitude !==
+                "undefined"
+            ) {
+
+                latitude =
+                    window.currentLatitude;
+
+            }
+
+
+            if (
+                longitude === null &&
+                typeof window.currentLongitude !==
+                "undefined"
+            ) {
+
+                longitude =
+                    window.currentLongitude;
+
+            }
+
+
+            /*
+             * Try data stored in the page.
+             */
+
+            const latElement =
+                document.getElementById(
+                    "latitude"
+                );
+
+            const lonElement =
+                document.getElementById(
+                    "longitude"
+                );
+
+
+            if (
+                latitude === null &&
+                latElement
+            ) {
+
+                latitude =
+                    parseFloat(
+                        latElement.value ||
+                        latElement.textContent
+                    );
+
+            }
+
+
+            if (
+                longitude === null &&
+                lonElement
+            ) {
+
+                longitude =
+                    parseFloat(
+                        lonElement.value ||
+                        lonElement.textContent
+                    );
+
+            }
+
+
+            /*
+             * ------------------------------------------------
+             * LOCATION VALIDATION
+             * ------------------------------------------------
+             */
+
+            if (
+                latitude === null ||
+                longitude === null ||
+                Number.isNaN(
+                    Number(latitude)
+                ) ||
+                Number.isNaN(
+                    Number(longitude)
+                )
+            ) {
+
+                showVoiceError(
+                    "Please select a location on the map first."
+                );
+
+                voiceStatus.textContent =
+                    "Select a location and try again.";
+
+                return;
+
+            }
+
+
+            voiceStatus.textContent =
+                "Getting the latest forecast...";
+
+
+            /*
+             * ------------------------------------------------
+             * CALL FLASK
+             * ------------------------------------------------
+             */
+
+            const data =
+                await window.AirCoupleAPI.askVoiceQuestion(
+                    question,
+                    latitude,
+                    longitude,
+                    locationName
+                );
+
+
+            /*
+             * ------------------------------------------------
+             * DISPLAY ANSWER
+             * ------------------------------------------------
+             */
+
+            const answer =
+                data.result.answer;
+
+
+            voiceAnswer.textContent =
+                answer;
+
+
+            voiceStatus.textContent =
+                "Answer ready.";
+
+
+            /*
+             * ------------------------------------------------
+             * AUTOMATICALLY READ ANSWER
+             * ------------------------------------------------
+             */
+
+            speakText(
+                answer
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Voice API error:",
+                error
+            );
+
+
+            showVoiceError(
+                error.message ||
+                "Unable to contact the AIR-COUPLE server."
+            );
+
+
+            voiceStatus.textContent =
+                "Something went wrong. Please try again.";
+
+        }
+
+    }
+
+
+    /* =======================================================
+       TEXT TO SPEECH
+       ======================================================= */
+
+    function speakText(
+        text
+    ) {
+
+        if (
+            !("speechSynthesis" in window)
+        ) {
+
+            return;
+
+        }
+
+
+        window.speechSynthesis.cancel();
+
+
+        const utterance =
+            new SpeechSynthesisUtterance(
+                text
+            );
+
+
+        /*
+         * Use Hindi voice when Hindi is selected.
+         */
+
+        if (
+            voiceLanguage.value ===
+            "hi-IN"
+        ) {
+
+            utterance.lang =
+                "hi-IN";
+
+        } else {
+
+            utterance.lang =
+                "en-IN";
+
+        }
+
+
+        utterance.rate =
+            0.9;
+
+        utterance.pitch =
+            1;
+
+
+        window.speechSynthesis.speak(
+            utterance
+        );
+
+    }
+
+
+    /* =======================================================
+       READ ANSWER BUTTON
+       ======================================================= */
+
+    speakAnswerButton.addEventListener(
+        "click",
+        function () {
+
+            const text =
+                voiceAnswer.textContent.trim();
+
+
+            if (
+                !text ||
+                text === "—"
+            ) {
+
+                return;
+
+            }
+
+
+            speakText(
+                text
+            );
+
+        }
+    );
+
+
+    /* =======================================================
+       STOP SPEECH
+       ======================================================= */
+
+    stopSpeechButton.addEventListener(
+        "click",
+        function () {
+
+            if (
+                "speechSynthesis" in window
+            ) {
+
+                window.speechSynthesis.cancel();
+
+            }
+
+            voiceStatus.textContent =
+                "Speech stopped.";
+
+        }
+    );
+
+
+    /* =======================================================
+       ERROR HELPERS
+       ======================================================= */
+
+    function showVoiceError(
+        message
+    ) {
+
+        voiceError.textContent =
+            message;
+
+        voiceError.style.display =
+            "block";
+
+    }
+
+
+    function hideVoiceError() {
+
+        voiceError.textContent =
+            "";
+
+        voiceError.style.display =
+            "none";
+
+    }
+
+
+})();
+
+</script>
+</body>
 </html>
